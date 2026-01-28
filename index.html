@@ -740,7 +740,7 @@
                 icon: 'https://img.icons8.com/color/48/satellite.png',
                 baseCost: { ore: 15 },
                 production: { ore: 1 },
-                unlockReq: null // Premier bâtiment toujours visible
+                unlockReq: null
             },
             {
                 id: 'solarPanel',
@@ -755,7 +755,7 @@
                 id: 'miningStation',
                 name: 'Station de Minage',
                 desc: '+10 minerai/sec',
-                icon: 'https://img.icons8.com/color/48/mining.png',
+                icon: 'https://img.icons8.com/color/48/drilling-rig.png',
                 baseCost: { ore: 200, energy: 50, credits: 25 },
                 production: { ore: 10 },
                 unlockReq: { buildings: { probe: 5 } }
@@ -773,7 +773,7 @@
                 id: 'fusionReactor',
                 name: 'Réacteur à Fusion',
                 desc: '+25 énergie/sec',
-                icon: 'https://img.icons8.com/color/48/nuclear-power-plant.png',
+                icon: 'https://img.icons8.com/color/48/atom.png',
                 baseCost: { ore: 1000, credits: 200 },
                 production: { energy: 25 },
                 unlockReq: { buildings: { solarPanel: 5 } }
@@ -782,7 +782,7 @@
                 id: 'researchLab',
                 name: 'Laboratoire',
                 desc: '+1 recherche/sec',
-                icon: 'https://img.icons8.com/color/48/laboratory.png',
+                icon: 'https://img.icons8.com/color/48/microscope.png',
                 baseCost: { ore: 2000, energy: 500, credits: 300 },
                 production: { research: 1 },
                 unlockReq: { buildings: { fusionReactor: 1 } }
@@ -800,7 +800,7 @@
                 id: 'dysonSwarm',
                 name: 'Essaim de Dyson',
                 desc: '+100 énergie/sec',
-                icon: 'https://img.icons8.com/color/48/sun-star.png',
+                icon: 'https://img.icons8.com/color/48/sun.png',
                 baseCost: { ore: 10000, energy: 5000, credits: 2000 },
                 production: { energy: 100 },
                 unlockReq: { buildings: { fusionReactor: 5 } }
@@ -809,7 +809,7 @@
                 id: 'spaceColony',
                 name: 'Colonie Spatiale',
                 desc: '+25 de chaque/sec',
-                icon: 'https://img.icons8.com/color/48/planet-earth.png',
+                icon: 'https://img.icons8.com/color/48/globe.png',
                 baseCost: { ore: 50000, energy: 20000, credits: 10000, research: 100 },
                 production: { ore: 25, energy: 25, credits: 25 },
                 unlockReq: { buildings: { asteroidRefinery: 1, dysonSwarm: 1, researchLab: 1 } }
@@ -821,7 +821,7 @@
                 id: 'betterDrill',
                 name: 'Foreuse Améliorée',
                 desc: 'Clics x2 minerai',
-                icon: 'https://img.icons8.com/color/48/drill.png',
+                icon: 'https://img.icons8.com/color/48/hammer.png',
                 cost: { credits: 50 },
                 unlockReq: { credits: 25 },
                 effect: { multiply: { ore: 2 } }
@@ -848,7 +848,7 @@
                 id: 'laserMining',
                 name: 'Minage Laser',
                 desc: 'Stations x2',
-                icon: 'https://img.icons8.com/color/48/laser-beam.png',
+                icon: 'https://img.icons8.com/color/48/light-on.png',
                 cost: { credits: 500, research: 10 },
                 unlockReq: { buildings: { miningStation: 3 } },
                 effect: { multiplyBuilding: { miningStation: 2 } }
@@ -857,7 +857,7 @@
                 id: 'warpDrive',
                 name: 'Moteur Warp',
                 desc: 'Cargo x3',
-                icon: 'https://img.icons8.com/color/48/star-trek-symbol.png',
+                icon: 'https://img.icons8.com/color/48/spiral-galaxy.png',
                 cost: { credits: 1000, research: 25 },
                 unlockReq: { buildings: { cargoShip: 5 } },
                 effect: { multiplyBuilding: { cargoShip: 3 } }
@@ -866,7 +866,7 @@
                 id: 'quantumComputing',
                 name: 'Informatique Quantique',
                 desc: 'Toute production x2',
-                icon: 'https://img.icons8.com/color/48/processor.png',
+                icon: 'https://img.icons8.com/color/48/cpu.png',
                 cost: { credits: 5000, research: 100 },
                 unlockReq: { research: 50 },
                 effect: { multiply: { ore: 2, energy: 2, credits: 2 } }
@@ -875,7 +875,7 @@
                 id: 'dysonSphere',
                 name: 'Sphère de Dyson',
                 desc: 'Énergie x10',
-                icon: 'https://img.icons8.com/color/48/sun-star.png',
+                icon: 'https://img.icons8.com/color/48/sun.png',
                 cost: { credits: 20000, research: 500 },
                 unlockReq: { buildings: { dysonSwarm: 10 } },
                 effect: { multiply: { energy: 10 } }
@@ -884,7 +884,7 @@
                 id: 'galacticTrade',
                 name: 'Commerce Galactique',
                 desc: 'Crédits x5',
-                icon: 'https://img.icons8.com/color/48/commercial.png',
+                icon: 'https://img.icons8.com/color/48/shopping-cart.png',
                 cost: { credits: 10000, research: 200 },
                 unlockReq: { credits: 1000 },
                 effect: { multiply: { credits: 5 } }
@@ -894,15 +894,15 @@
         const achievements = [
             { id: 'firstOre', name: 'Premier Minerai', desc: 'Mine ton premier minerai', icon: 'https://img.icons8.com/color/48/medal.png', req: { ore: 1 } },
             { id: 'hundredOre', name: 'Mineur Débutant', desc: 'Mine 100 minerais', icon: 'https://img.icons8.com/color/48/medal.png', req: { ore: 100 } },
-            { id: 'thousandOre', name: 'Mineur Expérimenté', desc: 'Mine 1 000 minerais', icon: 'https://img.icons8.com/color/48/medal2.png', req: { ore: 1000 } },
+            { id: 'thousandOre', name: 'Mineur Expérimenté', desc: 'Mine 1 000 minerais', icon: 'https://img.icons8.com/color/48/gold-medal.png', req: { ore: 1000 } },
             { id: 'firstProbe', name: 'Automatisation', desc: 'Construis ta première sonde', icon: 'https://img.icons8.com/color/48/trophy.png', req: { buildings: { probe: 1 } } },
             { id: 'firstStation', name: 'Entrepreneur', desc: 'Construis une station de minage', icon: 'https://img.icons8.com/color/48/trophy.png', req: { buildings: { miningStation: 1 } } },
             { id: 'energyMaster', name: 'Maître Énergie', desc: 'Génère 10 000 énergie', icon: 'https://img.icons8.com/color/48/trophy.png', req: { energy: 10000 } },
             { id: 'richMiner', name: 'Mineur Riche', desc: 'Accumule 1 000 crédits', icon: 'https://img.icons8.com/color/48/money-bag.png', req: { credits: 1000 } },
             { id: 'scientist', name: 'Scientifique', desc: 'Effectue 10 recherches', icon: 'https://img.icons8.com/color/48/medal.png', req: { research: 10 } },
-            { id: 'colonizer', name: 'Colonisateur', desc: 'Établis une colonie spatiale', icon: 'https://img.icons8.com/color/48/planet-earth.png', req: { buildings: { spaceColony: 1 } } },
+            { id: 'colonizer', name: 'Colonisateur', desc: 'Établis une colonie spatiale', icon: 'https://img.icons8.com/color/48/globe.png', req: { buildings: { spaceColony: 1 } } },
             { id: 'cosmicTycoon', name: 'Magnat Cosmique', desc: 'Mine 100 000 minerais', icon: 'https://img.icons8.com/color/48/crown.png', req: { ore: 100000 } },
-            { id: 'millionaire', name: 'Millionnaire', desc: 'Accumule 1 000 000 crédits', icon: 'https://img.icons8.com/color/48/expensive-2.png', req: { credits: 1000000 } }
+            { id: 'millionaire', name: 'Millionnaire', desc: 'Accumule 1 000 000 crédits', icon: 'https://img.icons8.com/color/48/diamond.png', req: { credits: 1000000 } }
         ];
 
         // ===== FONCTIONS UTILITAIRES =====
