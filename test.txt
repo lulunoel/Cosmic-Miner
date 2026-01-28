@@ -1,28 +1,23 @@
 Let's make a game!
 	name:Cosmic Miner
 	by:Crend
+	desc:Mine des asteroides et construis ton empire spatial!
 	version:1.0
 	created:28/01/2026
 	updated:28/01/2026
+
+Settings
 	background:#0a0a1a
 	building box:main
 	resource box:res
 	upgrade box:upgrades
 	achievement box:achievements
-	spritesheet:https://i.imgur.com/placeholder.png,48,48
-	css:
-		body{font-family:'Orbitron',sans-serif;color:#e0e0ff;}
-		.box{background:rgba(20,20,50,0.9);border:1px solid #4444aa;border-radius:8px;}
-		.thing{background:rgba(30,30,70,0.8);}
-		.thing:hover{background:rgba(50,50,100,0.9);}
-		.box .title{color:#88aaff;text-shadow:0 0 10px #4488ff;}
-	end
 
 //===================
 // RESOURCES
 //===================
 
-*Resources
+Resources
 
 *ore
 	name:Minerai Cosmique
@@ -49,7 +44,7 @@ Let's make a game!
 // BUTTONS (Clickables)
 //===================
 
-*Buttons
+Buttons
 
 *mineButton
 	name:Miner
@@ -87,7 +82,7 @@ Let's make a game!
 // BUILDINGS
 //===================
 
-*Buildings
+Buildings
 
 *probe
 	name:Sonde de Minage
@@ -169,7 +164,7 @@ Let's make a game!
 // UPGRADES
 //===================
 
-*Upgrades
+Upgrades
 
 *betterDrill
 	name:Foreuse Amelioree
@@ -241,7 +236,7 @@ Let's make a game!
 // ACHIEVEMENTS
 //===================
 
-*Achievements
+Achievements
 
 *firstOre
 	name:Premier Minerai
