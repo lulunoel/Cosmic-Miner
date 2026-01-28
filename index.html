@@ -817,6 +817,191 @@
             color: var(--accent-purple);
             font-weight: 600;
         }
+
+        /* ===== BUY AMOUNT SELECTOR ===== */
+        .buy-selector {
+            display: flex;
+            gap: 5px;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .buy-btn {
+            padding: 6px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75em;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .buy-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+        }
+
+        .buy-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--bg-dark);
+        }
+
+        /* ===== EVENTS ===== */
+        .event-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(0, 212, 255, 0.9));
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+            z-index: 1000;
+            animation: eventPulse 2s ease-in-out infinite;
+            text-align: center;
+        }
+
+        .event-banner .event-title {
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .event-banner .event-desc {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        .event-banner .event-timer {
+            font-size: 0.75em;
+            margin-top: 5px;
+            color: var(--accent-gold);
+        }
+
+        @keyframes eventPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(168, 85, 247, 0.8); }
+        }
+
+        /* ===== OFFLINE MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.4);
+        }
+
+        .modal h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+
+        .modal-gains {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .modal-gains .gain-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            background: var(--accent-purple);
+            transform: scale(1.05);
+        }
+
+        /* ===== STATS BUTTONS ===== */
+        .stats-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stats-btn {
+            padding: 8px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7em;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stats-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+        }
+
+        .stats-btn.danger {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .stats-btn.danger:hover {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        /* ===== KEYBOARD HINT ===== */
+        .keyboard-hint {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .keyboard-hint kbd {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
@@ -952,8 +1137,23 @@
                     credits: 0,
                     research: 0
                 }
-            }
+            },
+            lastOnline: Date.now(),
+            buyAmount: 1
         };
+
+        // ===== ÉVÉNEMENTS ALÉATOIRES =====
+        const events = [
+            { id: 'meteorShower', name: 'Pluie de Météores', desc: 'Production minerai x3', duration: 30000, effect: { multiply: { ore: 3 } } },
+            { id: 'solarFlare', name: 'Éruption Solaire', desc: 'Production énergie x3', duration: 30000, effect: { multiply: { energy: 3 } } },
+            { id: 'tradeBoom', name: 'Boom Commercial', desc: 'Production crédits x3', duration: 30000, effect: { multiply: { credits: 3 } } },
+            { id: 'eureka', name: 'Eureka!', desc: 'Production recherche x5', duration: 20000, effect: { multiply: { research: 5 } } },
+            { id: 'cosmicLuck', name: 'Chance Cosmique', desc: 'Toute production x2', duration: 45000, effect: { multiply: { ore: 2, energy: 2, credits: 2, research: 2 } } }
+        ];
+
+        let currentEvent = null;
+        let eventEndTime = 0;
+        let eventMultipliers = { ore: 1, energy: 1, credits: 1, research: 1 };
 
         // ===== DÉFINITIONS =====
         const buildings = [
@@ -1116,17 +1316,42 @@
         ];
 
         const achievements = [
+            // Minerai
             { id: 'firstOre', name: 'Premier Minerai', desc: 'Mine ton premier minerai', icon: 'https://img.icons8.com/color/48/medal.png', req: { ore: 1 } },
             { id: 'hundredOre', name: 'Mineur Débutant', desc: 'Mine 100 minerais', icon: 'https://img.icons8.com/color/48/medal.png', req: { ore: 100 } },
             { id: 'thousandOre', name: 'Mineur Expérimenté', desc: 'Mine 1 000 minerais', icon: 'https://img.icons8.com/color/48/gold-medal.png', req: { ore: 1000 } },
-            { id: 'firstProbe', name: 'Automatisation', desc: 'Construis ta première sonde', icon: 'https://img.icons8.com/color/48/trophy.png', req: { buildings: { probe: 1 } } },
-            { id: 'firstStation', name: 'Entrepreneur', desc: 'Construis une station de minage', icon: 'https://img.icons8.com/color/48/trophy.png', req: { buildings: { miningStation: 1 } } },
-            { id: 'energyMaster', name: 'Maître Énergie', desc: 'Génère 10 000 énergie', icon: 'https://img.icons8.com/color/48/trophy.png', req: { energy: 10000 } },
-            { id: 'richMiner', name: 'Mineur Riche', desc: 'Accumule 1 000 crédits', icon: 'https://img.icons8.com/color/48/money-bag.png', req: { credits: 1000 } },
-            { id: 'scientist', name: 'Scientifique', desc: 'Effectue 10 recherches', icon: 'https://img.icons8.com/color/48/medal.png', req: { research: 10 } },
-            { id: 'colonizer', name: 'Colonisateur', desc: 'Établis une colonie spatiale', icon: 'https://img.icons8.com/color/48/globe.png', req: { buildings: { spaceColony: 1 } } },
             { id: 'cosmicTycoon', name: 'Magnat Cosmique', desc: 'Mine 100 000 minerais', icon: 'https://img.icons8.com/color/48/crown.png', req: { ore: 100000 } },
-            { id: 'millionaire', name: 'Millionnaire', desc: 'Accumule 1 000 000 crédits', icon: 'https://img.icons8.com/color/48/diamond.png', req: { credits: 1000000 } }
+            { id: 'oreBillionaire', name: 'Roi du Minerai', desc: 'Mine 10 millions de minerais', icon: 'https://img.icons8.com/color/48/diamond.png', req: { ore: 10000000 } },
+
+            // Énergie
+            { id: 'energyMaster', name: 'Maître Énergie', desc: 'Génère 10 000 énergie', icon: 'https://img.icons8.com/color/48/trophy.png', req: { energy: 10000 } },
+            { id: 'powerPlant', name: 'Centrale Énergétique', desc: 'Génère 1 million d\'énergie', icon: 'https://img.icons8.com/color/48/lightning-bolt.png', req: { energy: 1000000 } },
+
+            // Crédits
+            { id: 'richMiner', name: 'Mineur Riche', desc: 'Accumule 1 000 crédits', icon: 'https://img.icons8.com/color/48/money-bag.png', req: { credits: 1000 } },
+            { id: 'millionaire', name: 'Millionnaire', desc: 'Accumule 1 million de crédits', icon: 'https://img.icons8.com/color/48/diamond.png', req: { credits: 1000000 } },
+            { id: 'billionaire', name: 'Milliardaire', desc: 'Accumule 1 milliard de crédits', icon: 'https://img.icons8.com/color/48/crown.png', req: { credits: 1000000000 } },
+
+            // Recherche
+            { id: 'scientist', name: 'Scientifique', desc: 'Effectue 10 recherches', icon: 'https://img.icons8.com/color/48/medal.png', req: { research: 10 } },
+            { id: 'researcher', name: 'Chercheur Expert', desc: 'Effectue 100 recherches', icon: 'https://img.icons8.com/color/48/test-tube.png', req: { research: 100 } },
+            { id: 'genius', name: 'Génie Cosmique', desc: 'Effectue 1000 recherches', icon: 'https://img.icons8.com/color/48/idea.png', req: { research: 1000 } },
+
+            // Bâtiments
+            { id: 'firstProbe', name: 'Automatisation', desc: 'Construis ta première sonde', icon: 'https://img.icons8.com/color/48/trophy.png', req: { buildings: { probe: 1 } } },
+            { id: 'probeArmy', name: 'Armée de Sondes', desc: 'Possède 50 sondes', icon: 'https://img.icons8.com/color/48/satellite.png', req: { buildings: { probe: 50 } } },
+            { id: 'firstStation', name: 'Entrepreneur', desc: 'Construis une station de minage', icon: 'https://img.icons8.com/color/48/trophy.png', req: { buildings: { miningStation: 1 } } },
+            { id: 'stationNetwork', name: 'Réseau Minier', desc: 'Possède 10 stations de minage', icon: 'https://img.icons8.com/color/48/control-panel.png', req: { buildings: { miningStation: 10 } } },
+            { id: 'solarFarm', name: 'Ferme Solaire', desc: 'Possède 25 panneaux solaires', icon: 'https://img.icons8.com/color/48/solar-panel.png', req: { buildings: { solarPanel: 25 } } },
+            { id: 'cargoFleet', name: 'Flotte Cargo', desc: 'Possède 10 vaisseaux cargo', icon: 'https://img.icons8.com/color/48/rocket.png', req: { buildings: { cargoShip: 10 } } },
+            { id: 'fusionMaster', name: 'Maître de la Fusion', desc: 'Possède 10 réacteurs à fusion', icon: 'https://img.icons8.com/color/48/atom.png', req: { buildings: { fusionReactor: 10 } } },
+            { id: 'colonizer', name: 'Colonisateur', desc: 'Établis une colonie spatiale', icon: 'https://img.icons8.com/color/48/globe.png', req: { buildings: { spaceColony: 1 } } },
+            { id: 'empireBuilder', name: 'Bâtisseur d\'Empire', desc: 'Possède 5 colonies spatiales', icon: 'https://img.icons8.com/color/48/castle.png', req: { buildings: { spaceColony: 5 } } },
+
+            // Clics
+            { id: 'clicker', name: 'Cliqueur', desc: 'Clique 100 fois', icon: 'https://img.icons8.com/color/48/cursor.png', req: { clicks: 100 } },
+            { id: 'clickMaster', name: 'Maître du Clic', desc: 'Clique 1 000 fois', icon: 'https://img.icons8.com/color/48/cursor.png', req: { clicks: 1000 } },
+            { id: 'clickLegend', name: 'Légende du Clic', desc: 'Clique 10 000 fois', icon: 'https://img.icons8.com/color/48/cursor.png', req: { clicks: 10000 } }
         ];
 
         const automations = [
@@ -1231,13 +1456,43 @@
             return Math.floor(num).toString();
         }
 
-        function getBuildingCost(building) {
+        function getBuildingCost(building, amount = 1) {
             const count = gameData.buildings[building.id] || 0;
             const cost = {};
             for (const [resource, base] of Object.entries(building.baseCost)) {
-                cost[resource] = Math.floor(base * Math.pow(1.15, count));
+                let total = 0;
+                for (let i = 0; i < amount; i++) {
+                    total += Math.floor(base * Math.pow(1.15, count + i));
+                }
+                cost[resource] = total;
             }
             return cost;
+        }
+
+        function getMaxAffordable(building) {
+            let max = 0;
+            const count = gameData.buildings[building.id] || 0;
+            let tempResources = { ...gameData.resources };
+
+            while (max < 1000) { // Limite à 1000 pour éviter les boucles infinies
+                const cost = {};
+                for (const [resource, base] of Object.entries(building.baseCost)) {
+                    cost[resource] = Math.floor(base * Math.pow(1.15, count + max));
+                }
+                let canBuy = true;
+                for (const [resource, amount] of Object.entries(cost)) {
+                    if ((tempResources[resource] || 0) < amount) {
+                        canBuy = false;
+                        break;
+                    }
+                }
+                if (!canBuy) break;
+                for (const [resource, amount] of Object.entries(cost)) {
+                    tempResources[resource] -= amount;
+                }
+                max++;
+            }
+            return max;
         }
 
         function canAfford(cost) {
@@ -1303,7 +1558,8 @@
                 if (count > 0) {
                     const multiplier = gameData.buildingMultipliers[building.id] || 1;
                     for (const [resource, amount] of Object.entries(building.production)) {
-                        production[resource] += amount * count * multiplier * gameData.multipliers[resource];
+                        const eventMult = eventMultipliers[resource] || 1;
+                        production[resource] += amount * count * multiplier * gameData.multipliers[resource] * eventMult;
                     }
                 }
             }
@@ -1328,11 +1584,38 @@
         function renderBuildings() {
             const panel = document.getElementById('buildings-panel');
             panel.innerHTML = '';
+
+            // Sélecteur de quantité d'achat
+            const selector = document.createElement('div');
+            selector.className = 'buy-selector';
+            selector.innerHTML = `
+                <button class="buy-btn ${gameData.buyAmount === 1 ? 'active' : ''}" data-amount="1">x1</button>
+                <button class="buy-btn ${gameData.buyAmount === 10 ? 'active' : ''}" data-amount="10">x10</button>
+                <button class="buy-btn ${gameData.buyAmount === 100 ? 'active' : ''}" data-amount="100">x100</button>
+                <button class="buy-btn ${gameData.buyAmount === -1 ? 'active' : ''}" data-amount="-1">MAX</button>
+            `;
+            selector.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    gameData.buyAmount = parseInt(btn.dataset.amount);
+                    renderBuildings();
+                });
+            });
+            panel.appendChild(selector);
+
             for (const building of buildings) {
                 const unlocked = checkUnlock(building.unlockReq);
-                const cost = getBuildingCost(building);
-                const affordable = canAfford(cost);
                 const count = gameData.buildings[building.id] || 0;
+
+                // Calculer la quantité à acheter
+                let buyQty = gameData.buyAmount;
+                if (buyQty === -1) {
+                    buyQty = getMaxAffordable(building);
+                }
+                buyQty = Math.max(1, buyQty);
+
+                const cost = getBuildingCost(building, buyQty);
+                const affordable = canAfford(cost);
+
                 if (!unlocked && count === 0) {
                     const almostUnlocked = checkAlmostUnlocked(building.unlockReq);
                     if (!almostUnlocked) continue;
@@ -1344,19 +1627,36 @@
                     const hasEnough = gameData.resources[resource] >= amount;
                     costHTML += `<span class="cost-item ${hasEnough ? 'affordable' : 'expensive'}">${formatNumber(amount)} ${resource}</span>`;
                 }
+
+                const displayQty = gameData.buyAmount === -1 ? `+${buyQty}` : `+${buyQty}`;
+
+                // Calculer la production totale de ce bâtiment
+                let totalProdHTML = '';
+                if (count > 0) {
+                    const buildingMult = gameData.buildingMultipliers[building.id] || 1;
+                    let prodParts = [];
+                    for (const [resource, baseAmount] of Object.entries(building.production)) {
+                        const eventMult = eventMultipliers[resource] || 1;
+                        const totalProd = baseAmount * count * buildingMult * gameData.multipliers[resource] * eventMult;
+                        prodParts.push(`+${formatNumber(totalProd)} ${resource}/s`);
+                    }
+                    totalProdHTML = `<div style="font-size: 0.7em; color: var(--accent-cyan); margin-top: 4px;">Total: ${prodParts.join(', ')}</div>`;
+                }
+
                 card.innerHTML = `
                     <img src="${building.icon}" class="building-icon" alt="${building.name}">
                     <div class="building-info">
                         <div class="building-header">
-                            <span class="building-name">${building.name}</span>
+                            <span class="building-name">${building.name} <small style="color: var(--accent-green);">(${displayQty})</small></span>
                             <span class="building-count">${count}</span>
                         </div>
                         <div class="building-desc">${building.desc}</div>
+                        ${totalProdHTML}
                         <div class="building-cost">${costHTML}</div>
                         ${!unlocked ? `<div class="locked-reason">Verrouillé — ${formatUnlockReq(building.unlockReq)}</div>` : ''}
                     </div>
                 `;
-                if (unlocked) card.addEventListener('click', () => buyBuilding(building));
+                if (unlocked && buyQty > 0) card.addEventListener('click', () => buyBuilding(building, buyQty));
                 panel.appendChild(card);
             }
         }
@@ -1528,6 +1828,22 @@
                     </div>
                 </div>
 
+                <div class="stats-section">
+                    <div class="stats-section-title">Raccourcis clavier</div>
+                    <div class="stat-row"><span class="stat-label"><kbd>Espace</kbd></span><span>Miner</span></div>
+                    <div class="stat-row"><span class="stat-label"><kbd>S</kbd></span><span>Vendre</span></div>
+                    <div class="stat-row"><span class="stat-label"><kbd>R</kbd></span><span>Rechercher</span></div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stats-section-title">Sauvegarde</div>
+                    <div class="stats-buttons">
+                        <button class="stats-btn" onclick="exportSave()">Exporter</button>
+                        <button class="stats-btn" onclick="importSave()">Importer</button>
+                        <button class="stats-btn danger" onclick="resetGame()">Reset</button>
+                    </div>
+                </div>
+
                 <div class="stats-section credits-section">
                     <div class="credits-title">Crédits</div>
                     <div class="credits-text">
@@ -1652,11 +1968,11 @@
             }
         }
 
-        function buyBuilding(building) {
-            const cost = getBuildingCost(building);
+        function buyBuilding(building, amount = 1) {
+            const cost = getBuildingCost(building, amount);
             if (canAfford(cost)) {
                 spendResources(cost);
-                gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + 1;
+                gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + amount;
                 updateResourceDisplay();
                 renderBuildings();
                 renderUpgrades();
@@ -1695,13 +2011,15 @@
                                 unlocked = false; break;
                             }
                         }
+                    } else if (key === 'clicks') {
+                        if ((gameData.stats.clicks || 0) < value) unlocked = false;
                     } else {
                         if ((gameData.totalEarned[key] || 0) < value) unlocked = false;
                     }
                 }
                 if (unlocked) {
                     gameData.achievements[achievement.id] = true;
-                    showNotification(`🏆 Succès débloqué : ${achievement.name}`);
+                    showNotification(`Succès débloqué : ${achievement.name}`);
                     renderAchievements();
                 }
             }
@@ -1759,8 +2077,10 @@
 
         // ===== SAVE / LOAD =====
         function saveGame() {
+            gameData.lastOnline = Date.now();
             localStorage.setItem('cosmicMiner', JSON.stringify(gameData));
         }
+
         function loadGame() {
             const saved = localStorage.getItem('cosmicMiner');
             if (saved) {
@@ -1780,15 +2100,178 @@
                 if (!gameData.automationEnabled) {
                     gameData.automationEnabled = {};
                 }
+                if (gameData.buyAmount === undefined) {
+                    gameData.buyAmount = 1;
+                }
             }
         }
+
+        function calculateOfflineGains() {
+            if (!gameData.lastOnline) return null;
+
+            const now = Date.now();
+            const elapsed = now - gameData.lastOnline;
+            const maxOfflineTime = 8 * 60 * 60 * 1000; // 8 heures max
+            const actualTime = Math.min(elapsed, maxOfflineTime);
+
+            // Minimum 1 minute pour afficher le modal
+            if (actualTime < 60000) return null;
+
+            const production = calculateProduction();
+            const seconds = actualTime / 1000;
+            const gains = {};
+            let hasGains = false;
+
+            for (const [resource, rate] of Object.entries(production)) {
+                const gained = rate * seconds * 0.5; // 50% de la production normale
+                if (gained > 0) {
+                    gains[resource] = gained;
+                    gameData.resources[resource] += gained;
+                    gameData.totalEarned[resource] += gained;
+                    hasGains = true;
+                }
+            }
+
+            return hasGains ? { gains, time: actualTime } : null;
+        }
+
+        function showOfflineModal(offlineData) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+
+            let gainsHTML = '';
+            const resourceNames = { ore: 'Minerai', energy: 'Énergie', credits: 'Crédits', research: 'Recherche' };
+            for (const [resource, amount] of Object.entries(offlineData.gains)) {
+                gainsHTML += `<div class="gain-row"><span>${resourceNames[resource]}</span><span class="stat-value ${resource}">+${formatNumber(amount)}</span></div>`;
+            }
+
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h2>Bon retour !</h2>
+                    <p>Tu étais absent pendant <strong>${formatTime(offlineData.time)}</strong></p>
+                    <div class="modal-gains">
+                        ${gainsHTML}
+                    </div>
+                    <p style="font-size: 0.8em; color: var(--text-secondary);">Production offline: 50%</p>
+                    <button class="modal-btn" onclick="this.closest('.modal-overlay').remove()">Récupérer</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function exportSave() {
+            const saveData = btoa(JSON.stringify(gameData));
+            navigator.clipboard.writeText(saveData).then(() => {
+                showNotification('Sauvegarde copiée !');
+            });
+        }
+
+        function importSave() {
+            const saveData = prompt('Colle ta sauvegarde ici :');
+            if (saveData) {
+                try {
+                    const data = JSON.parse(atob(saveData));
+                    Object.assign(gameData, data);
+                    saveGame();
+                    location.reload();
+                } catch (e) {
+                    showNotification('Sauvegarde invalide !');
+                }
+            }
+        }
+
+        function resetGame() {
+            if (confirm('Es-tu sûr de vouloir recommencer ? Toute ta progression sera perdue !')) {
+                localStorage.removeItem('cosmicMiner');
+                location.reload();
+            }
+        }
+
+        // ===== ÉVÉNEMENTS ALÉATOIRES =====
+        function triggerRandomEvent() {
+            if (currentEvent) return; // Un événement est déjà en cours
+
+            const event = events[Math.floor(Math.random() * events.length)];
+            currentEvent = event;
+            eventEndTime = Date.now() + event.duration;
+
+            // Appliquer les multiplicateurs de l'événement
+            for (const [resource, mult] of Object.entries(event.effect.multiply)) {
+                eventMultipliers[resource] = mult;
+            }
+
+            showEventBanner();
+        }
+
+        function showEventBanner() {
+            const existing = document.querySelector('.event-banner');
+            if (existing) existing.remove();
+
+            const banner = document.createElement('div');
+            banner.className = 'event-banner';
+            banner.innerHTML = `
+                <div class="event-title">${currentEvent.name}</div>
+                <div class="event-desc">${currentEvent.desc}</div>
+                <div class="event-timer" id="event-timer"></div>
+            `;
+            document.body.appendChild(banner);
+            updateEventTimer();
+        }
+
+        function updateEventTimer() {
+            if (!currentEvent) return;
+            const remaining = eventEndTime - Date.now();
+            if (remaining <= 0) {
+                endEvent();
+                return;
+            }
+            const timerEl = document.getElementById('event-timer');
+            if (timerEl) {
+                timerEl.textContent = `${Math.ceil(remaining / 1000)}s restantes`;
+            }
+        }
+
+        function endEvent() {
+            eventMultipliers = { ore: 1, energy: 1, credits: 1, research: 1 };
+            currentEvent = null;
+            const banner = document.querySelector('.event-banner');
+            if (banner) banner.remove();
+        }
+
+        // Vérifier les événements toutes les secondes
+        setInterval(() => {
+            if (currentEvent) {
+                updateEventTimer();
+            } else if (Math.random() < 0.005) { // ~0.5% de chance par seconde
+                triggerRandomEvent();
+            }
+        }, 1000);
 
         // ===== INIT =====
         function init() {
             loadGame();
+
+            // Calculer les gains offline
+            const offlineData = calculateOfflineGains();
+            if (offlineData) {
+                setTimeout(() => showOfflineModal(offlineData), 500);
+            }
+
             document.getElementById('mine-btn').addEventListener('click', mine);
             document.getElementById('sell-btn').addEventListener('click', sell);
             document.getElementById('research-btn').addEventListener('click', research);
+
+            // Raccourcis clavier
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    mine();
+                }
+                if (e.code === 'KeyS' && !e.ctrlKey) sell();
+                if (e.code === 'KeyR' && !e.ctrlKey) research();
+            });
+
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
