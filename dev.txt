@@ -60,10 +60,8 @@ Buttons
 	icon:https://img.icons8.com/color/48/sell.png
 	req:10 ore
 	on click:
-		if (have 10 ore)
-			lose 10 ore
-			yield 5 credits
-		end
+		lose 10 ore
+		yield 5 credits
 	end
 
 *researchButton
@@ -72,10 +70,8 @@ Buttons
 	icon:https://img.icons8.com/color/48/microscope.png
 	req:20 energy
 	on click:
-		if (have 20 energy)
-			lose 20 energy
-			yield 1 research
-		end
+		lose 20 energy
+		yield 1 research
 	end
 
 //===================
