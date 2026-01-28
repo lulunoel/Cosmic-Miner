@@ -1449,10 +1449,73 @@
 
         // ===== FONCTIONS UTILITAIRES =====
         function formatNumber(num) {
-            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
-            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
-            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'k';
+            const units = [
+                { value: 1e303, symbol: 'Ce' }, // Centillion
+                { value: 1e300, symbol: 'No' }, // Novemnonagintillion
+                { value: 1e297, symbol: 'Oc' },
+                { value: 1e294, symbol: 'Sp' },
+                { value: 1e291, symbol: 'Sx' },
+                { value: 1e288, symbol: 'Qi' },
+                { value: 1e285, symbol: 'Qa' },
+                { value: 1e282, symbol: 'Tt' },
+                { value: 1e279, symbol: 'Dt' },
+                { value: 1e276, symbol: 'Ud' },
+                { value: 1e273, symbol: 'Dd' },
+                { value: 1e270, symbol: 'Td' },
+                { value: 1e267, symbol: 'Qd' },
+                { value: 1e264, symbol: 'Sd' },
+                { value: 1e261, symbol: 'Vg' },
+                { value: 1e258, symbol: 'Uv' },
+                { value: 1e255, symbol: 'Dv' },
+                { value: 1e252, symbol: 'Tv' },
+                { value: 1e249, symbol: 'Qv' },
+                { value: 1e246, symbol: 'Sv' },
+                { value: 1e243, symbol: 'Tg' },
+                { value: 1e240, symbol: 'Qg' },
+                { value: 1e237, symbol: 'Sg' },
+                { value: 1e234, symbol: 'Og' },
+                { value: 1e231, symbol: 'Ng' },
+                { value: 1e228, symbol: 'Ct' },
+                { value: 1e225, symbol: 'UvT' },
+                { value: 1e222, symbol: 'DvT' },
+                { value: 1e219, symbol: 'TvT' },
+                { value: 1e216, symbol: 'QvT' },
+                { value: 1e213, symbol: 'SvT' },
+                { value: 1e210, symbol: 'Dc' },
+                { value: 1e207, symbol: 'NoDc' },
+                { value: 1e204, symbol: 'OcDc' },
+                { value: 1e201, symbol: 'SpDc' },
+                { value: 1e198, symbol: 'SxDc' },
+                { value: 1e195, symbol: 'QiDc' },
+                { value: 1e192, symbol: 'QaDc' },
+                { value: 1e189, symbol: 'TtDc' },
+                { value: 1e186, symbol: 'DtDc' },
+                { value: 1e183, symbol: 'UdDc' },
+                { value: 1e180, symbol: 'Qn' }, // Quintillion^2 zone
+                { value: 1e150, symbol: 'QaQi' },
+                { value: 1e120, symbol: 'NoQi' },
+                { value: 1e90,  symbol: 'OcQi' },
+                { value: 1e60,  symbol: 'Nv' },
+                { value: 1e30,  symbol: 'No' },
+                { value: 1e27,  symbol: 'Oc' },
+                { value: 1e24,  symbol: 'Sp' },
+                { value: 1e21,  symbol: 'Sx' },
+                { value: 1e18,  symbol: 'Qi' },
+                { value: 1e15,  symbol: 'Qa' },
+                { value: 1e12,  symbol: 'T' },
+                { value: 1e9,   symbol: 'B' },
+                { value: 1e6,   symbol: 'M' },
+                { value: 1e3,   symbol: 'k' }
+            ];
+
+            for (const unit of units) {
+                if (num >= unit.value) {
+                    return (num / unit.value)
+                        .toFixed(2)
+                        .replace(/\.?0+$/, '') + unit.symbol;
+                }
+            }
+
             return Math.floor(num).toString();
         }
 
