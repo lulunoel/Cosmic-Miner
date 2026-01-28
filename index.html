@@ -618,6 +618,58 @@
             margin-top: 8px;
             text-align: center;
         }
+
+        /* ===== AUTOMATION ===== */
+        .automation-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .automation-card:hover:not(.locked):not(.purchased) {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .automation-card.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .automation-card.purchased {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .automation-card.purchased::after {
+            content: 'ACTIF';
+            position: absolute;
+            right: 15px;
+            color: var(--accent-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+
+        .automation-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .automation-status {
+            font-size: 0.7em;
+            color: var(--accent-green);
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -701,12 +753,14 @@
             <div class="tabs">
                 <button class="tab active" data-tab="buildings">Bâtiments</button>
                 <button class="tab" data-tab="upgrades">Améliorations</button>
+                <button class="tab" data-tab="automation">Auto</button>
                 <button class="tab" data-tab="achievements">Succès</button>
             </div>
 
             <div class="tab-content">
                 <div class="tab-panel active" id="buildings-panel"></div>
                 <div class="tab-panel" id="upgrades-panel"></div>
+                <div class="tab-panel" id="automation-panel"></div>
                 <div class="tab-panel" id="achievements-panel"></div>
             </div>
         </div>
@@ -730,6 +784,8 @@
             buildings: {},
             upgrades: {},
             achievements: {},
+            automations: {},
+            automationTimers: {},
             multipliers: {
                 ore: 1,
                 energy: 1,
@@ -911,6 +967,99 @@
             { id: 'colonizer', name: 'Colonisateur', desc: 'Établis une colonie spatiale', icon: 'https://img.icons8.com/color/48/globe.png', req: { buildings: { spaceColony: 1 } } },
             { id: 'cosmicTycoon', name: 'Magnat Cosmique', desc: 'Mine 100 000 minerais', icon: 'https://img.icons8.com/color/48/crown.png', req: { ore: 100000 } },
             { id: 'millionaire', name: 'Millionnaire', desc: 'Accumule 1 000 000 crédits', icon: 'https://img.icons8.com/color/48/diamond.png', req: { credits: 1000000 } }
+        ];
+
+        const automations = [
+            {
+                id: 'autoProbe',
+                name: 'Auto-Sonde',
+                desc: 'Achète automatiquement des Sondes de Minage',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'probe',
+                cost: { credits: 500, research: 5 },
+                unlockReq: { buildings: { probe: 10 } },
+                interval: 5000
+            },
+            {
+                id: 'autoSolarPanel',
+                name: 'Auto-Panneaux',
+                desc: 'Achète automatiquement des Panneaux Solaires',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'solarPanel',
+                cost: { credits: 1000, research: 10 },
+                unlockReq: { buildings: { solarPanel: 10 } },
+                interval: 5000
+            },
+            {
+                id: 'autoMiningStation',
+                name: 'Auto-Station',
+                desc: 'Achète automatiquement des Stations de Minage',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'miningStation',
+                cost: { credits: 2500, research: 25 },
+                unlockReq: { buildings: { miningStation: 5 } },
+                interval: 6000
+            },
+            {
+                id: 'autoCargoShip',
+                name: 'Auto-Cargo',
+                desc: 'Achète automatiquement des Vaisseaux Cargo',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'cargoShip',
+                cost: { credits: 5000, research: 50 },
+                unlockReq: { buildings: { cargoShip: 5 } },
+                interval: 6000
+            },
+            {
+                id: 'autoFusionReactor',
+                name: 'Auto-Réacteur',
+                desc: 'Achète automatiquement des Réacteurs à Fusion',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'fusionReactor',
+                cost: { credits: 10000, research: 100 },
+                unlockReq: { buildings: { fusionReactor: 5 } },
+                interval: 7000
+            },
+            {
+                id: 'autoResearchLab',
+                name: 'Auto-Labo',
+                desc: 'Achète automatiquement des Laboratoires',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'researchLab',
+                cost: { credits: 15000, research: 150 },
+                unlockReq: { buildings: { researchLab: 3 } },
+                interval: 8000
+            },
+            {
+                id: 'autoAsteroidRefinery',
+                name: 'Auto-Raffinerie',
+                desc: 'Achète automatiquement des Raffineries',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'asteroidRefinery',
+                cost: { credits: 25000, research: 200 },
+                unlockReq: { buildings: { asteroidRefinery: 3 } },
+                interval: 8000
+            },
+            {
+                id: 'autoDysonSwarm',
+                name: 'Auto-Dyson',
+                desc: 'Achète automatiquement des Essaims de Dyson',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'dysonSwarm',
+                cost: { credits: 50000, research: 300 },
+                unlockReq: { buildings: { dysonSwarm: 3 } },
+                interval: 10000
+            },
+            {
+                id: 'autoSpaceColony',
+                name: 'Auto-Colonie',
+                desc: 'Achète automatiquement des Colonies Spatiales',
+                icon: 'https://img.icons8.com/color/48/robot.png',
+                buildingId: 'spaceColony',
+                cost: { credits: 100000, research: 500 },
+                unlockReq: { buildings: { spaceColony: 1 } },
+                interval: 15000
+            }
         ];
 
         // ===== FONCTIONS UTILITAIRES =====
@@ -1116,6 +1265,63 @@
             }
         }
 
+        function renderAutomation() {
+            const panel = document.getElementById('automation-panel');
+            panel.innerHTML = '';
+            for (const automation of automations) {
+                const unlocked = checkUnlock(automation.unlockReq);
+                const purchased = gameData.automations[automation.id];
+                const affordable = canAfford(automation.cost);
+                const building = buildings.find(b => b.id === automation.buildingId);
+
+                if (!unlocked && !purchased) {
+                    const almostUnlocked = checkAlmostUnlocked(automation.unlockReq);
+                    if (!almostUnlocked) continue;
+                }
+
+                const card = document.createElement('div');
+                card.className = `automation-card ${!unlocked ? 'locked' : ''} ${purchased ? 'purchased' : ''} ${affordable && unlocked && !purchased ? 'affordable' : ''}`;
+
+                let costHTML = '';
+                if (!purchased) {
+                    for (const [resource, amount] of Object.entries(automation.cost)) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costHTML += `<span class="cost-item ${hasEnough ? 'affordable' : 'expensive'}">${formatNumber(amount)} ${resource}</span>`;
+                    }
+                }
+
+                const buildingCount = gameData.buildings[automation.buildingId] || 0;
+                const statusText = purchased ? `${building.name} : ${buildingCount} (achat auto toutes les ${automation.interval / 1000}s)` : '';
+
+                card.innerHTML = `
+                    <img src="${automation.icon}" class="automation-icon" alt="${automation.name}">
+                    <div class="building-info">
+                        <div class="building-name">${automation.name}</div>
+                        <div class="building-desc">${automation.desc}</div>
+                        ${purchased ? `<div class="automation-status">${statusText}</div>` : ''}
+                        ${!purchased ? `<div class="building-cost">${costHTML}</div>` : ''}
+                        ${!unlocked ? `<div class="locked-reason">Verrouillé — ${formatUnlockReq(automation.unlockReq)}</div>` : ''}
+                    </div>
+                `;
+
+                if (unlocked && !purchased) {
+                    card.addEventListener('click', () => buyAutomation(automation));
+                }
+                panel.appendChild(card);
+            }
+        }
+
+        function buyAutomation(automation) {
+            if (!gameData.automations[automation.id] && canAfford(automation.cost)) {
+                spendResources(automation.cost);
+                gameData.automations[automation.id] = true;
+                gameData.automationTimers[automation.id] = Date.now();
+                updateResourceDisplay();
+                renderAutomation();
+                showNotification(`${automation.name} activé !`);
+            }
+        }
+
         // ===== ACTIONS =====
         function mine() {
             const amount = 1 * gameData.multipliers.ore;
@@ -1216,6 +1422,26 @@
             setTimeout(() => notif.remove(), 3000);
         }
 
+        // ===== AUTOMATION LOGIC =====
+        function processAutomation() {
+            const now = Date.now();
+            for (const automation of automations) {
+                if (!gameData.automations[automation.id]) continue;
+                const lastPurchase = gameData.automationTimers[automation.id] || 0;
+                if (now - lastPurchase >= automation.interval) {
+                    const building = buildings.find(b => b.id === automation.buildingId);
+                    if (building) {
+                        const cost = getBuildingCost(building);
+                        if (canAfford(cost)) {
+                            spendResources(cost);
+                            gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + 1;
+                            gameData.automationTimers[automation.id] = now;
+                        }
+                    }
+                }
+            }
+        }
+
         // ===== GAME LOOP =====
         let tickCount = 0;
         function gameLoop() {
@@ -1224,12 +1450,14 @@
                 gameData.resources[resource] += amount / 10;
                 gameData.totalEarned[resource] += amount / 10;
             }
+            processAutomation();
             updateResourceDisplay();
             tickCount++;
             if (tickCount >= 5) {
                 tickCount = 0;
                 renderBuildings();
                 renderUpgrades();
+                renderAutomation();
             }
             checkAchievements();
         }
@@ -1263,6 +1491,7 @@
             updateResourceDisplay();
             renderBuildings();
             renderUpgrades();
+            renderAutomation();
             renderAchievements();
             setInterval(gameLoop, 100);
             setInterval(saveGame, 30000);
