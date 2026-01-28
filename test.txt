@@ -38,7 +38,7 @@ Resources
 	name:Points de Recherche
 	desc:Debloque de nouvelles technologies.
 	icon:https://img.icons8.com/color/48/test-tube.png
-	hidden:1
+	hidden
 
 //===================
 // BUTTONS (Clickables)
