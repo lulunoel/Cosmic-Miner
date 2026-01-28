@@ -1,6 +1,5 @@
 Let's make a game!
-
-*Settings
+	name:Cosmic Miner
 	by:Crend
 	version:1.0
 	created:28/01/2026
