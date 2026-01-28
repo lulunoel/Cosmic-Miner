@@ -725,6 +725,98 @@
         .automation-card.purchased::after {
             display: none;
         }
+
+        /* ===== STATS ===== */
+        .stats-section {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stats-section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.8em;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .stat-value.ore { color: var(--accent-cyan); }
+        .stat-value.energy { color: var(--accent-gold); }
+        .stat-value.credits { color: var(--accent-green); }
+        .stat-value.research { color: var(--accent-purple); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stats-grid .stat-row {
+            flex-direction: column;
+            align-items: flex-start;
+            background: rgba(255,255,255,0.03);
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .stats-grid .stat-value {
+            font-size: 1.1em;
+            margin-top: 4px;
+        }
+
+        .credits-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .credits-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+
+        .credits-text {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .credits-text a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .credits-text a:hover {
+            text-decoration: underline;
+        }
+
+        .credits-name {
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -807,9 +899,10 @@
         <div class="right-panel">
             <div class="tabs">
                 <button class="tab active" data-tab="buildings">Bâtiments</button>
-                <button class="tab" data-tab="upgrades">Améliorations</button>
+                <button class="tab" data-tab="upgrades">Amélior.</button>
                 <button class="tab" data-tab="automation">Auto</button>
                 <button class="tab" data-tab="achievements">Succès</button>
+                <button class="tab" data-tab="stats">Stats</button>
             </div>
 
             <div class="tab-content">
@@ -817,6 +910,7 @@
                 <div class="tab-panel" id="upgrades-panel"></div>
                 <div class="tab-panel" id="automation-panel"></div>
                 <div class="tab-panel" id="achievements-panel"></div>
+                <div class="tab-panel" id="stats-panel"></div>
             </div>
         </div>
     </div>
@@ -848,7 +942,17 @@
                 credits: 1,
                 research: 1
             },
-            buildingMultipliers: {}
+            buildingMultipliers: {},
+            stats: {
+                clicks: 0,
+                startTime: Date.now(),
+                totalSpent: {
+                    ore: 0,
+                    energy: 0,
+                    credits: 0,
+                    research: 0
+                }
+            }
         };
 
         // ===== DÉFINITIONS =====
@@ -1146,6 +1250,9 @@
         function spendResources(cost) {
             for (const [resource, amount] of Object.entries(cost)) {
                 gameData.resources[resource] -= amount;
+                if (gameData.stats.totalSpent[resource] !== undefined) {
+                    gameData.stats.totalSpent[resource] += amount;
+                }
             }
         }
 
@@ -1321,6 +1428,118 @@
             }
         }
 
+        function formatTime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days}j ${hours % 24}h ${minutes % 60}m`;
+            if (hours > 0) return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+            if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+            return `${seconds}s`;
+        }
+
+        function renderStats() {
+            const panel = document.getElementById('stats-panel');
+            const production = calculateProduction();
+            const playTime = Date.now() - (gameData.stats.startTime || Date.now());
+
+            panel.innerHTML = `
+                <div class="stats-section">
+                    <div class="stats-section-title">Temps de jeu</div>
+                    <div class="stat-row">
+                        <span class="stat-label">Temps total</span>
+                        <span class="stat-value">${formatTime(playTime)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Clics totaux</span>
+                        <span class="stat-value">${formatNumber(gameData.stats.clicks || 0)}</span>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stats-section-title">Production</div>
+                    <div class="stats-grid">
+                        <div class="stat-row">
+                            <span class="stat-label">Minerai</span>
+                            <span class="stat-value ore">${formatNumber(production.ore)}/s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Énergie</span>
+                            <span class="stat-value energy">${formatNumber(production.energy)}/s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Crédits</span>
+                            <span class="stat-value credits">${formatNumber(production.credits)}/s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Recherche</span>
+                            <span class="stat-value research">${formatNumber(production.research)}/s</span>
+                        </div>
+                    </div>
+                    <div class="stat-row" style="margin-top: 10px;">
+                        <span class="stat-label">Par minute</span>
+                        <span class="stat-value ore">${formatNumber(production.ore * 60)} minerai</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Par heure</span>
+                        <span class="stat-value ore">${formatNumber(production.ore * 3600)} minerai</span>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stats-section-title">Total gagné</div>
+                    <div class="stat-row">
+                        <span class="stat-label">Minerai</span>
+                        <span class="stat-value ore">${formatNumber(gameData.totalEarned.ore || 0)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Énergie</span>
+                        <span class="stat-value energy">${formatNumber(gameData.totalEarned.energy || 0)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Crédits</span>
+                        <span class="stat-value credits">${formatNumber(gameData.totalEarned.credits || 0)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Recherche</span>
+                        <span class="stat-value research">${formatNumber(gameData.totalEarned.research || 0)}</span>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stats-section-title">Total dépensé</div>
+                    <div class="stat-row">
+                        <span class="stat-label">Minerai</span>
+                        <span class="stat-value ore">${formatNumber(gameData.stats.totalSpent?.ore || 0)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Énergie</span>
+                        <span class="stat-value energy">${formatNumber(gameData.stats.totalSpent?.energy || 0)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Crédits</span>
+                        <span class="stat-value credits">${formatNumber(gameData.stats.totalSpent?.credits || 0)}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Recherche</span>
+                        <span class="stat-value research">${formatNumber(gameData.stats.totalSpent?.research || 0)}</span>
+                    </div>
+                </div>
+
+                <div class="stats-section credits-section">
+                    <div class="credits-title">Crédits</div>
+                    <div class="credits-text">
+                        <p>Développé par <span class="credits-name">Crmusic music</span></p>
+                        <p style="margin-top: 10px;">Icônes par <a href="https://icons8.com" target="_blank">Icons8</a></p>
+                        <p style="margin-top: 10px;">Police Orbitron & Exo 2 par Google Fonts</p>
+                        <p style="margin-top: 15px; font-size: 0.9em; color: var(--accent-gold);">Merci de jouer !</p>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderAutomation() {
             const panel = document.getElementById('automation-panel');
             panel.innerHTML = '';
@@ -1397,6 +1616,7 @@
 
         // ===== ACTIONS =====
         function mine() {
+            gameData.stats.clicks++;
             const amount = 1 * gameData.multipliers.ore;
             gameData.resources.ore += amount;
             gameData.totalEarned.ore += amount;
@@ -1532,6 +1752,7 @@
                 renderBuildings();
                 renderUpgrades();
                 renderAutomation();
+                renderStats();
             }
             checkAchievements();
         }
@@ -1545,6 +1766,20 @@
             if (saved) {
                 const data = JSON.parse(saved);
                 Object.assign(gameData, data);
+                // Initialiser les stats si elles n'existent pas (anciennes sauvegardes)
+                if (!gameData.stats) {
+                    gameData.stats = {
+                        clicks: 0,
+                        startTime: Date.now(),
+                        totalSpent: { ore: 0, energy: 0, credits: 0, research: 0 }
+                    };
+                }
+                if (!gameData.stats.totalSpent) {
+                    gameData.stats.totalSpent = { ore: 0, energy: 0, credits: 0, research: 0 };
+                }
+                if (!gameData.automationEnabled) {
+                    gameData.automationEnabled = {};
+                }
             }
         }
 
@@ -1567,6 +1802,7 @@
             renderUpgrades();
             renderAutomation();
             renderAchievements();
+            renderStats();
             setInterval(gameLoop, 100);
             setInterval(saveGame, 30000);
             window.addEventListener('beforeunload', saveGame);
