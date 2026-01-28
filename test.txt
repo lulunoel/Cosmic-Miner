@@ -1,5 +1,4 @@
 Let's make a game!
-Cosmic Miner
 
 *Settings
 	by:Crend
