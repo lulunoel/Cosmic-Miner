@@ -1,8 +1,8 @@
 Let's make a game!
 	name:Cosmic Miner
 	by:Crend
-	desc:Mine des asteroides et construis ton empire spatial!
-	version:1.0
+	desc:Mine des astéroïdes et construis ton empire spatial!
+	version:2.0
 	created:28/01/2026
 	updated:28/01/2026
 
@@ -12,6 +12,33 @@ Settings
 	resource box:res
 	upgrade box:upgrades
 	achievement box:achievements
+	button box:actions
+
+CSS
+	#actions
+		position:fixed
+		bottom:20px
+		left:50%
+		transform:translateX(-50%)
+		display:flex
+		gap:20px
+		z-index:100
+	end
+	#actions .thing
+		font-size:1.2em
+		padding:15px 25px
+	end
+	#actions .thing .icon
+		width:64px
+		height:64px
+	end
+	.moneyText
+		color:#FFD700
+		text-shadow:0 0 10px #FFD700
+	end
+	.productionText
+		color:#00FF88
+	end
 
 //===================
 // RESOURCES
@@ -20,44 +47,47 @@ Settings
 Resources
 
 *ore
-	name:Minerai Cosmique
-	desc:Le minerai brut extrait des asteroides. Ressource de base de ton empire spatial.
+	name:⛏️ Minerai Cosmique
+	desc:Le minerai brut extrait des astéroïdes.<br><b class="productionText">Ressource principale de ton empire!</b>
 	icon:https://img.icons8.com/color/48/asteroid.png
 
 *energy
-	name:Energie
-	desc:L'energie necessaire pour faire fonctionner tes machines et vaisseaux.
+	name:⚡ Énergie
+	desc:L'énergie nécessaire pour alimenter tes machines et vaisseaux.<br><b class="productionText">Essentielle pour l'automatisation!</b>
 	icon:https://img.icons8.com/color/48/lightning-bolt.png
 
 *credits
-	name:Credits
-	desc:La monnaie galactique. Utilise-la pour acheter des ameliorations.
+	name:💰 Crédits
+	desc:La monnaie galactique universelle.<br><b class="moneyText">Achète des améliorations puissantes!</b>
 	icon:https://img.icons8.com/color/48/money--v1.png
 
 *research
-	name:Points de Recherche
-	desc:Debloque de nouvelles technologies.
+	name:🔬 Points de Recherche
+	desc:Débloque de nouvelles technologies avancées.<br><b style="color:#aa55ff">La clé vers les upgrades ultimes!</b>
 	icon:https://img.icons8.com/color/48/test-tube.png
-	hidden
 
 //===================
-// BUTTONS (Clickables)
+// BOUTONS PRINCIPAUX (Actions)
 //===================
 
 Buttons
 
 *mineButton
-	name:Miner
-	desc:Clique pour extraire du minerai cosmique manuellement.<br><b>+1 Minerai par clic</b>
-	icon:https://img.icons8.com/color/48/pickaxe.png
+	name:⛏️ MINER
+	desc:<b style="font-size:1.2em">Clique pour extraire du minerai!</b><br><br>🪨 <b class="productionText">+1 Minerai Cosmique</b> par clic<br><br><i>Ton outil principal pour démarrer ton empire.</i>
+	icon:https://img.icons8.com/color/96/pickaxe.png
+	class:bigButton
+	in:actions
 	on click:
 		yield 1 ore
 	end
 
 *sellButton
-	name:Vendre Minerai
-	desc:Vends ton minerai contre des credits.<br><b>-10 Minerai = +5 Credits</b>
-	icon:https://img.icons8.com/color/48/sell.png
+	name:💸 VENDRE
+	desc:<b style="font-size:1.2em">Convertis ton minerai en crédits!</b><br><br>📦 Coût: <b style="color:#ff6666">-10 Minerai</b><br>💰 Gain: <b class="moneyText">+5 Crédits</b><br><br><i>Les crédits permettent d'acheter des améliorations.</i>
+	icon:https://img.icons8.com/color/96/sell.png
+	class:bigButton
+	in:actions
 	req:10 ore
 	on click:
 		lose 10 ore
@@ -65,9 +95,11 @@ Buttons
 	end
 
 *researchButton
-	name:Rechercher
-	desc:Convertis de l'energie en points de recherche.<br><b>-20 Energie = +1 Recherche</b>
-	icon:https://img.icons8.com/color/48/microscope.png
+	name:🔬 RECHERCHER
+	desc:<b style="font-size:1.2em">Investis dans la recherche!</b><br><br>⚡ Coût: <b style="color:#ff6666">-20 Énergie</b><br>🧪 Gain: <b style="color:#aa55ff">+1 Point de Recherche</b><br><br><i>Débloque les technologies les plus puissantes!</i>
+	icon:https://img.icons8.com/color/96/microscope.png
+	class:bigButton
+	in:actions
 	req:20 energy
 	on click:
 		lose 20 energy
@@ -81,72 +113,72 @@ Buttons
 Buildings
 
 *probe
-	name:Sonde de Minage
-	desc:Une petite sonde automatisee qui mine les asteroides proches.<br><b>Produit 1 minerai/sec</b>
+	name:🛰️ Sonde de Minage
+	desc:Une petite sonde automatisée qui mine les astéroïdes proches.<br><br>📊 Production: <b class="productionText">+1 minerai/sec</b><br><br><i>"Le premier pas vers l'automatisation!"</i>
 	icon:https://img.icons8.com/color/48/satellite.png
 	cost:15 ore
 	on tick:yield 1 ore
 	req:10 ore:earned
 
 *solarPanel
-	name:Panneau Solaire
-	desc:Capte l'energie des etoiles proches.<br><b>Produit 2 energie/sec</b>
+	name:☀️ Panneau Solaire
+	desc:Capte l'énergie des étoiles proches pour alimenter tes machines.<br><br>📊 Production: <b class="productionText">+2 énergie/sec</b><br><br><i>"L'énergie solaire, gratuite et infinie!"</i>
 	icon:https://img.icons8.com/color/48/solar-panel.png
 	cost:25 ore, 10 credits
 	on tick:yield 2 energy
 	req:1 probe
 
 *miningStation
-	name:Station de Minage
-	desc:Une station orbitale equipee de lasers de minage.<br><b>Produit 10 minerai/sec</b>
+	name:🏭 Station de Minage
+	desc:Une station orbitale équipée de lasers de minage haute précision.<br><br>📊 Production: <b class="productionText">+10 minerai/sec</b><br><br><i>"L'industrie lourde de l'espace!"</i>
 	icon:https://img.icons8.com/color/48/space-station.png
 	cost:200 ore, 50 energy, 25 credits
 	on tick:yield 10 ore
 	req:5 probe
 
 *cargoShip
-	name:Vaisseau Cargo
-	desc:Transporte et vend automatiquement le minerai.<br><b>Produit 5 credits/sec</b>
+	name:🚀 Vaisseau Cargo
+	desc:Transporte et vend automatiquement le minerai aux stations commerciales.<br><br>📊 Production: <b class="moneyText">+5 crédits/sec</b><br><br><i>"Le commerce interstellaire à ton service!"</i>
 	icon:https://img.icons8.com/color/48/rocket.png
 	cost:500 ore, 100 energy, 100 credits
 	on tick:yield 5 credits
 	req:1 miningStation
 
 *fusionReactor
-	name:Reacteur a Fusion
-	desc:Genere une quantite massive d'energie.<br><b>Produit 25 energie/sec</b>
+	name:⚛️ Réacteur à Fusion
+	desc:Génère une quantité massive d'énergie propre par fusion nucléaire.<br><br>📊 Production: <b class="productionText">+25 énergie/sec</b><br><br><i>"La puissance des étoiles dans tes mains!"</i>
 	icon:https://img.icons8.com/color/48/nuclear-power-plant.png
 	cost:1000 ore, 200 credits
 	on tick:yield 25 energy
 	req:5 solarPanel
 
 *researchLab
-	name:Laboratoire de Recherche
-	desc:Genere des points de recherche automatiquement.<br><b>Produit 1 recherche/sec</b>
+	name:🔭 Laboratoire de Recherche
+	desc:Des scientifiques travaillent jour et nuit sur de nouvelles technologies.<br><br>📊 Production: <b style="color:#aa55ff">+1 recherche/sec</b><br><br><i>"La connaissance est le vrai pouvoir!"</i>
 	icon:https://img.icons8.com/color/48/laboratory.png
 	cost:2000 ore, 500 energy, 300 credits
 	on tick:yield 1 research
 	req:1 fusionReactor
 
 *asteroidRefinery
-	name:Raffinerie d'Asteroides
-	desc:Traite le minerai brut pour une meilleure efficacite.<br><b>Produit 50 minerai/sec</b>
+	name:🏗️ Raffinerie d'Astéroïdes
+	desc:Traite le minerai brut pour une extraction optimale des ressources.<br><br>📊 Production: <b class="productionText">+50 minerai/sec</b><br><br><i>"Rien ne se perd, tout se transforme!"</i>
 	icon:https://img.icons8.com/color/48/factory.png
 	cost:5000 ore, 1000 energy, 500 credits
 	on tick:yield 50 ore
 	req:3 miningStation
 
 *dysonSwarm
-	name:Essaim de Dyson
-	desc:Un reseau de satellites autour d'une etoile.<br><b>Produit 100 energie/sec</b>
+	name:🌟 Essaim de Dyson
+	desc:Un réseau de milliers de satellites captant l'énergie d'une étoile entière.<br><br>📊 Production: <b class="productionText">+100 énergie/sec</b><br><br><i>"Exploite la puissance d'une étoile!"</i>
 	icon:https://img.icons8.com/color/48/sun-star.png
 	cost:10000 ore, 5000 energy, 2000 credits
 	on tick:yield 100 energy
 	req:5 fusionReactor
 
 *spaceColony
-	name:Colonie Spatiale
-	desc:Une colonie autonome qui genere toutes les ressources.<br><b>Produit 25 de chaque ressource/sec</b>
+	name:🌍 Colonie Spatiale
+	desc:Une colonie autonome abritant des milliers d'habitants productifs.<br><br>📊 Production: <b class="productionText">+25 minerai, +25 énergie, +25 crédits/sec</b><br><br><i>"L'humanité s'étend dans les étoiles!"</i>
 	icon:https://img.icons8.com/color/48/planet-earth.png
 	cost:50000 ore, 20000 energy, 10000 credits, 100 research
 	on tick:
@@ -163,48 +195,48 @@ Buildings
 Upgrades
 
 *betterDrill
-	name:Foreuse Amelioree
-	desc:Tes clics rapportent 2x plus de minerai.
+	name:🔧 Foreuse Améliorée
+	desc:Technologie de forage avancée.<br><br>✨ Effet: <b class="productionText">Clics x2 minerai</b><br><br><i>"Creuse plus profond, récolte plus!"</i>
 	icon:https://img.icons8.com/color/48/drill.png
 	cost:50 credits
 	req:25 credits:earned
 	passive:multiply yield of ore by 2
 
 *efficientProbes
-	name:Sondes Efficaces
-	desc:Les sondes produisent 2x plus.
+	name:📡 Sondes Efficaces
+	desc:Algorithmes de minage optimisés pour les sondes.<br><br>✨ Effet: <b class="productionText">Sondes x2</b><br><br><i>"Plus intelligent, plus rapide!"</i>
 	icon:https://img.icons8.com/color/48/satellite.png
 	cost:100 credits
 	req:5 probe
 	passive:multiply yield of probe by 2
 
 *solarBoost
-	name:Amplificateur Solaire
-	desc:Les panneaux solaires produisent 3x plus d'energie.
+	name:🔆 Amplificateur Solaire
+	desc:Cellules photovoltaïques de nouvelle génération.<br><br>✨ Effet: <b class="productionText">Panneaux solaires x3</b><br><br><i>"Capte chaque photon!"</i>
 	icon:https://img.icons8.com/color/48/solar-panel.png
 	cost:200 credits
 	req:10 solarPanel
 	passive:multiply yield of solarPanel by 3
 
 *laserMining
-	name:Minage Laser
-	desc:Les stations de minage sont 2x plus efficaces.
+	name:💥 Minage Laser
+	desc:Lasers de précision pour une extraction optimale.<br><br>✨ Effet: <b class="productionText">Stations de minage x2</b><br><br><i>"Découpe chirurgicale des astéroïdes!"</i>
 	icon:https://img.icons8.com/color/48/laser-beam.png
 	cost:500 credits, 10 research
 	req:3 miningStation
 	passive:multiply yield of miningStation by 2
 
 *warpDrive
-	name:Moteur Warp
-	desc:Les vaisseaux cargo rapportent 3x plus de credits.
+	name:🌀 Moteur Warp
+	desc:Voyage superluminique pour des livraisons instantanées.<br><br>✨ Effet: <b class="moneyText">Vaisseaux cargo x3</b><br><br><i>"La distance n'est plus un obstacle!"</i>
 	icon:https://img.icons8.com/color/48/star-trek-symbol.png
 	cost:1000 credits, 25 research
 	req:5 cargoShip
 	passive:multiply yield of cargoShip by 3
 
 *quantumComputing
-	name:Informatique Quantique
-	desc:Toute la production est doublee!
+	name:💻 Informatique Quantique
+	desc:Optimisation quantique de toutes les opérations.<br><br>✨ Effet: <b class="productionText">TOUTE production x2!</b><br><br><i>"Le pouvoir de la superposition!"</i>
 	icon:https://img.icons8.com/color/48/processor.png
 	cost:5000 credits, 100 research
 	req:50 research:earned
@@ -213,16 +245,16 @@ Upgrades
 	passive:multiply yield of credits by 2
 
 *dysonSphere
-	name:Sphere de Dyson
-	desc:L'energie est maintenant illimitee! Production x10.
+	name:🌞 Sphère de Dyson
+	desc:Encercle une étoile entière pour capter toute son énergie.<br><br>✨ Effet: <b class="productionText">Énergie x10!</b><br><br><i>"Le mégaprojet ultime!"</i>
 	icon:https://img.icons8.com/color/48/sun-star.png
 	cost:20000 credits, 500 research
 	req:10 dysonSwarm
 	passive:multiply yield of energy by 10
 
 *galacticTrade
-	name:Commerce Galactique
-	desc:Les ventes rapportent 5x plus de credits.
+	name:🌌 Commerce Galactique
+	desc:Réseau commercial s'étendant sur toute la galaxie.<br><br>✨ Effet: <b class="moneyText">Crédits x5!</b><br><br><i>"Ton empire commercial est sans limite!"</i>
 	icon:https://img.icons8.com/color/48/commercial.png
 	cost:10000 credits, 200 research
 	req:1000 credits:earned
@@ -235,67 +267,67 @@ Upgrades
 Achievements
 
 *firstOre
-	name:Premier Minerai
-	desc:Tu as mine ton premier minerai cosmique!
+	name:🎉 Premier Minerai
+	desc:Tu as miné ton premier minerai cosmique!<br><i>"Tout empire commence par un premier pas..."</i>
 	icon:https://img.icons8.com/color/48/medal.png
 	req:1 ore:earned
 
 *hundredOre
-	name:Mineur Debutant
-	desc:Tu as mine 100 minerais.
+	name:⛏️ Mineur Débutant
+	desc:Tu as miné 100 minerais!<br><i>"Tu commences à prendre le coup de main!"</i>
 	icon:https://img.icons8.com/color/48/medal.png
 	req:100 ore:earned
 
 *thousandOre
-	name:Mineur Experimente
-	desc:Tu as mine 1000 minerais.
+	name:💎 Mineur Expérimenté
+	desc:Tu as miné 1 000 minerais!<br><i>"Un vrai professionnel de l'extraction!"</i>
 	icon:https://img.icons8.com/color/48/medal2.png
 	req:1000 ore:earned
 
 *firstProbe
-	name:Automatisation
-	desc:Tu as construit ta premiere sonde de minage.
+	name:🤖 Automatisation
+	desc:Tu as construit ta première sonde de minage!<br><i>"Laisse les machines travailler pour toi!"</i>
 	icon:https://img.icons8.com/color/48/trophy.png
 	req:1 probe
 
 *firstStation
-	name:Entrepreneur Spatial
-	desc:Tu as construit ta premiere station de minage.
+	name:🏢 Entrepreneur Spatial
+	desc:Tu as construit ta première station de minage!<br><i>"Ton entreprise prend de l'ampleur!"</i>
 	icon:https://img.icons8.com/color/48/trophy.png
 	req:1 miningStation
 
 *energyMaster
-	name:Maitre de l'Energie
-	desc:Tu as genere 10000 unites d'energie.
+	name:⚡ Maître de l'Énergie
+	desc:Tu as généré 10 000 unités d'énergie!<br><i>"L'énergie coule à flots!"</i>
 	icon:https://img.icons8.com/color/48/trophy.png
 	req:10000 energy:earned
 
 *richMiner
-	name:Mineur Riche
-	desc:Tu as accumule 1000 credits.
+	name:💰 Mineur Riche
+	desc:Tu as accumulé 1 000 crédits!<br><i>"L'argent appelle l'argent!"</i>
 	icon:https://img.icons8.com/color/48/money-bag.png
 	req:1000 credits:earned
 
 *scientist
-	name:Scientifique
-	desc:Tu as effectue tes premieres recherches.
+	name:🔬 Scientifique
+	desc:Tu as effectué tes premières recherches!<br><i>"La connaissance est infinie!"</i>
 	icon:https://img.icons8.com/color/48/medal.png
 	req:10 research:earned
 
 *colonizer
-	name:Colonisateur
-	desc:Tu as etabli ta premiere colonie spatiale!
+	name:🌍 Colonisateur
+	desc:Tu as établi ta première colonie spatiale!<br><i>"L'humanité s'étend grâce à toi!"</i>
 	icon:https://img.icons8.com/color/48/planet-earth.png
 	req:1 spaceColony
 
 *cosmicTycoon
-	name:Magnat Cosmique
-	desc:Tu domines la galaxie! 100000 minerais mines.
+	name:👑 Magnat Cosmique
+	desc:Tu domines la galaxie avec 100 000 minerais minés!<br><i>"Tu es une légende!"</i>
 	icon:https://img.icons8.com/color/48/crown.png
 	req:100000 ore:earned
 
 *millionaire
-	name:Millionnaire Galactique
-	desc:Tu as accumule 1000000 de credits!
+	name:🤑 Millionnaire Galactique
+	desc:Tu as accumulé 1 000 000 de crédits!<br><i>"Ton empire financier est sans égal!"</i>
 	icon:https://img.icons8.com/color/48/expensive-2.png
 	req:1000000 credits:earned
