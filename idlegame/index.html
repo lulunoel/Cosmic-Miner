@@ -141,7 +141,7 @@
         /* ===== LAYOUT PRINCIPAL ===== */
         .game-container {
             display: grid;
-            grid-template-columns: 320px 1fr 380px;
+            grid-template-columns: 300px 1fr 420px;
             min-height: 100vh;
             gap: 0;
         }
@@ -374,34 +374,40 @@
 
         .tabs {
             display: flex;
+            flex-wrap: wrap;
             border-bottom: 1px solid var(--border-glow);
             flex-shrink: 0;
+            gap: 2px;
+            padding: 4px;
         }
 
         .tab {
-            flex: 1;
-            padding: 10px 5px;
+            flex: 1 1 auto;
+            min-width: fit-content;
+            padding: 8px 10px;
             text-align: center;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.7em;
             cursor: pointer;
-            background: transparent;
-            border: none;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
             color: var(--text-secondary);
             transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
             white-space: nowrap;
         }
 
         .tab:hover {
             color: var(--text-primary);
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
         }
 
         .tab.active {
             color: var(--accent-cyan);
-            border-bottom-color: var(--accent-cyan);
-            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.15);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
         }
 
         .tab-content {
@@ -627,7 +633,16 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1200px) {
             .game-container {
-                grid-template-columns: 280px 1fr 320px;
+                grid-template-columns: 260px 1fr 360px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                font-size: 0.65em;
+                padding: 6px 8px;
             }
         }
 
@@ -643,6 +658,14 @@
                 justify-content: center;
                 border-right: none;
                 border-bottom: 1px solid var(--border-glow);
+                height: auto;
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+
+            .planet-selector {
+                width: 100%;
+                grid-template-columns: repeat(5, 1fr);
             }
 
             .resource-card {
@@ -653,6 +676,11 @@
                 border-left: none;
                 border-top: 1px solid var(--border-glow);
                 max-height: 50vh;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
 
@@ -1316,28 +1344,28 @@
 
         /* ===== REBIRTH & PLANETS SYSTEM ===== */
         .planet-selector {
-            display: flex;
-            gap: 8px;
-            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            padding: 8px;
             background: var(--bg-card);
             border-radius: 10px;
             margin-bottom: 15px;
-            overflow-x: auto;
-            justify-content: center;
         }
 
         .planet-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 10px 15px;
+            justify-content: center;
+            gap: 2px;
+            padding: 6px 4px;
             background: rgba(255,255,255,0.05);
             border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 80px;
+            min-width: 0;
         }
 
         .planet-btn:hover:not(.locked) {
@@ -1348,7 +1376,7 @@
         .planet-btn.active {
             border-color: var(--accent-gold);
             background: rgba(255, 215, 0, 0.15);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
         .planet-btn.locked {
@@ -1357,13 +1385,19 @@
         }
 
         .planet-btn .planet-icon {
-            font-size: 1.5em;
+            font-size: 1.3em;
         }
 
         .planet-btn .planet-name {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.65em;
+            font-size: 0.55em;
             color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
         }
 
         .planet-btn.active .planet-name {
@@ -4012,6 +4046,9 @@
                     updateBuildingsDisplay();
                     updateUpgradesDisplay();
                     updateAutomationDisplay();
+                    updatePrestigeDisplay();
+                    updateRebirthDisplay();
+                    updateStatsDisplay();
                 }
             }
             checkAchievements();
@@ -4125,6 +4162,119 @@
                         costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
                     }
                     i++;
+                }
+            });
+        }
+
+        // Mise à jour légère de l'onglet Prestige
+        function updatePrestigeDisplay() {
+            const panel = document.getElementById('prestige-panel');
+            if (!panel || !panel.innerHTML) return;
+
+            // Mettre à jour les requirements du prochain prestige
+            const nextLevel = getNextPrestigeLevel();
+            if (nextLevel) {
+                const reqCheck = checkPrestigeRequirement(nextLevel.requirements);
+                const reqElements = panel.querySelectorAll('.prestige-req');
+                reqCheck.details.forEach((d, i) => {
+                    if (reqElements[i]) {
+                        reqElements[i].querySelector('.prestige-req-icon').textContent = d.met ? '✅' : '❌';
+                        reqElements[i].querySelector('.prestige-req-text').textContent = d.text;
+                        const status = reqElements[i].querySelector('.prestige-req-status');
+                        status.textContent = d.met ? 'OK' : 'En cours';
+                        status.className = `prestige-req-status ${d.met ? 'complete' : 'incomplete'}`;
+                    }
+                });
+
+                // Mettre à jour le bouton prestige
+                const btn = panel.querySelector('.prestige-button');
+                if (btn) btn.disabled = !canPrestige();
+            }
+        }
+
+        // Mise à jour légère de l'onglet Rebirth
+        function updateRebirthDisplay() {
+            const panel = document.getElementById('rebirth-panel');
+            if (!panel || !panel.innerHTML) return;
+
+            // Mettre à jour les requirements du prochain rebirth
+            const nextLevel = getNextRebirthLevel();
+            if (nextLevel) {
+                const reqCheck = checkRebirthRequirement(nextLevel.requirements);
+                const reqElements = panel.querySelectorAll('.prestige-req');
+                reqCheck.details.forEach((d, i) => {
+                    if (reqElements[i]) {
+                        reqElements[i].querySelector('.prestige-req-icon').textContent = d.met ? '✅' : '❌';
+                        reqElements[i].querySelector('.prestige-req-text').textContent = d.text;
+                        const status = reqElements[i].querySelector('.prestige-req-status');
+                        status.textContent = d.met ? 'OK' : 'En cours';
+                        status.className = `prestige-req-status ${d.met ? 'complete' : 'incomplete'}`;
+                    }
+                });
+
+                // Mettre à jour le bouton rebirth
+                const btn = panel.querySelector('.rebirth-button');
+                if (btn) btn.disabled = !canRebirth();
+            }
+
+            // Mettre à jour les stats de rebirth
+            const bonus = getRebirthBonus();
+            const multiplierEl = panel.querySelector('.rebirth-multiplier');
+            if (multiplierEl) {
+                multiplierEl.textContent = `x${bonus.globalMultiplier.toFixed(1)} Production Globale`;
+            }
+        }
+
+        // Mise à jour légère de l'onglet Stats
+        function updateStatsDisplay() {
+            const panel = document.getElementById('stats-panel');
+            if (!panel || !panel.innerHTML) return;
+
+            const production = calculateProduction();
+            const playTime = Date.now() - (gameData.stats.startTime || Date.now());
+
+            // Sélectionner tous les stat-value et les mettre à jour
+            const statValues = panel.querySelectorAll('.stat-value');
+            const statLabels = panel.querySelectorAll('.stat-label');
+
+            // Parcourir et mettre à jour les valeurs
+            statLabels.forEach((label, i) => {
+                const text = label.textContent;
+                const valueEl = statValues[i];
+                if (!valueEl) return;
+
+                if (text === 'Temps total') {
+                    valueEl.textContent = formatTime(playTime);
+                } else if (text === 'Clics totaux') {
+                    valueEl.textContent = formatNumber(gameData.stats.clicks || 0);
+                } else if (text === 'Minerai' && valueEl.classList.contains('ore')) {
+                    if (valueEl.textContent.includes('/s')) {
+                        valueEl.textContent = `${formatNumber(production.ore)}/s`;
+                    } else {
+                        valueEl.textContent = formatNumber(gameData.totalEarned.ore || 0);
+                    }
+                } else if (text === 'Énergie') {
+                    if (valueEl.textContent.includes('/s')) {
+                        valueEl.textContent = `${formatNumber(production.energy)}/s`;
+                    } else {
+                        valueEl.textContent = formatNumber(gameData.totalEarned.energy || 0);
+                    }
+                } else if (text === 'Crédits') {
+                    if (valueEl.textContent.includes('/s')) {
+                        valueEl.textContent = `${formatNumber(production.credits)}/s`;
+                    } else {
+                        valueEl.textContent = formatNumber(gameData.totalEarned.credits || 0);
+                    }
+                } else if (text === 'Recherche') {
+                    if (valueEl.textContent.includes('/s')) {
+                        valueEl.textContent = `${formatNumber(production.research)}/s`;
+                    } else {
+                        valueEl.textContent = formatNumber(gameData.totalEarned.research || 0);
+                    }
+                } else if (text === 'Par minute') {
+                    valueEl.textContent = `${formatNumber(production.ore * 60)} minerai`;
+                } else if (text === 'Par heure') {
+                    valueEl.textContent = `${formatNumber(production.ore * 3600)} minerai`;
                 }
             });
         }
