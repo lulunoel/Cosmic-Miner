@@ -2650,27 +2650,39 @@
         }
 
         function canAfford(cost) {
+            const specialResources = ['plasma', 'crystals', 'magma', 'darkMatter'];
             for (const [resource, amount] of Object.entries(cost)) {
-                if ((gameData.resources[resource] || 0) < amount) return false;
+                if (specialResources.includes(resource)) {
+                    if ((gameData.rebirth.specialResources[resource] || 0) < amount) return false;
+                } else {
+                    if ((gameData.resources[resource] || 0) < amount) return false;
+                }
             }
             return true;
         }
 
         function spendResources(cost) {
+            const specialResources = ['plasma', 'crystals', 'magma', 'darkMatter'];
             for (const [resource, amount] of Object.entries(cost)) {
-                gameData.resources[resource] -= amount;
-                if (gameData.stats.totalSpent[resource] !== undefined) {
-                    gameData.stats.totalSpent[resource] += amount;
+                if (specialResources.includes(resource)) {
+                    gameData.rebirth.specialResources[resource] = (gameData.rebirth.specialResources[resource] || 0) - amount;
+                } else {
+                    gameData.resources[resource] -= amount;
+                    if (gameData.stats.totalSpent[resource] !== undefined) {
+                        gameData.stats.totalSpent[resource] += amount;
+                    }
                 }
             }
         }
 
         function checkUnlock(req) {
             if (!req) return true;
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const buildingsData = currentPlanet === 'terra' ? gameData.buildings : (gameData.rebirth.planetData[currentPlanet]?.buildings || {});
             for (const [key, value] of Object.entries(req)) {
                 if (key === 'buildings') {
                     for (const [buildingId, count] of Object.entries(value)) {
-                        if ((gameData.buildings[buildingId] || 0) < count) {
+                        if ((buildingsData[buildingId] || 0) < count) {
                             return false;
                         }
                     }
@@ -2706,19 +2718,38 @@
 
         // ===== PRODUCTION =====
         function calculateProduction() {
-            const production = { ore: 0, energy: 0, credits: 0, research: 0 };
+            const production = { ore: 0, energy: 0, credits: 0, research: 0, plasma: 0, crystals: 0, magma: 0, darkMatter: 0 };
             const prestigeBonus = getPrestigeBonus();
             const rebirthBonus = getRebirthBonus();
+            const currentPlanet = gameData.rebirth.currentPlanet;
+
+            // Production des bâtiments de Terra (toujours actifs)
             for (const building of buildings) {
                 const count = gameData.buildings[building.id] || 0;
                 if (count > 0) {
                     const multiplier = gameData.buildingMultipliers[building.id] || 1;
                     for (const [resource, amount] of Object.entries(building.production)) {
                         const eventMult = eventMultipliers[resource] || 1;
-                        production[resource] += amount * count * multiplier * gameData.multipliers[resource] * eventMult * prestigeBonus.globalMultiplier * rebirthBonus.globalMultiplier;
+                        production[resource] = (production[resource] || 0) + amount * count * multiplier * (gameData.multipliers[resource] || 1) * eventMult * prestigeBonus.globalMultiplier * rebirthBonus.globalMultiplier;
                     }
                 }
             }
+
+            // Production des bâtiments de la planète courante (si différente de Terra)
+            if (currentPlanet !== 'terra' && planetBuildings[currentPlanet]) {
+                const planetBuildingsData = gameData.rebirth.planetData[currentPlanet]?.buildings || {};
+                for (const building of planetBuildings[currentPlanet]) {
+                    const count = planetBuildingsData[building.id] || 0;
+                    if (count > 0) {
+                        const multiplier = gameData.buildingMultipliers[building.id] || 1;
+                        for (const [resource, amount] of Object.entries(building.production)) {
+                            const eventMult = eventMultipliers[resource] || 1;
+                            production[resource] = (production[resource] || 0) + amount * count * multiplier * (gameData.multipliers[resource] || 1) * eventMult * prestigeBonus.globalMultiplier * rebirthBonus.globalMultiplier;
+                        }
+                    }
+                }
+            }
+
             return production;
         }
 
@@ -2774,9 +2805,14 @@
             });
             panel.appendChild(selector);
 
-            for (const building of buildings) {
+            // Déterminer les bâtiments et données selon la planète courante
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const buildingsList = currentPlanet === 'terra' ? buildings : (planetBuildings[currentPlanet] || []);
+            const buildingsData = currentPlanet === 'terra' ? gameData.buildings : (gameData.rebirth.planetData[currentPlanet]?.buildings || {});
+
+            for (const building of buildingsList) {
                 const unlocked = checkUnlock(building.unlockReq);
-                const count = gameData.buildings[building.id] || 0;
+                const count = buildingsData[building.id] || 0;
 
                 // Calculer la quantité à acheter
                 let buyQty = gameData.buyAmount;
@@ -2837,10 +2873,12 @@
 
         function checkAlmostUnlocked(req) {
             if (!req) return true;
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const buildingsData = currentPlanet === 'terra' ? gameData.buildings : (gameData.rebirth.planetData[currentPlanet]?.buildings || {});
             for (const [key, value] of Object.entries(req)) {
                 if (key === 'buildings') {
                     for (const [buildingId, count] of Object.entries(value)) {
-                        if ((gameData.buildings[buildingId] || 0) >= count * 0.5) return true;
+                        if ((buildingsData[buildingId] || 0) >= count * 0.5) return true;
                     }
                 } else {
                     const current = Math.max(gameData.resources[key] || 0, gameData.totalEarned[key] || 0);
@@ -2853,9 +2891,15 @@
         function renderUpgrades() {
             const panel = document.getElementById('upgrades-panel');
             panel.innerHTML = '';
-            for (const upgrade of upgrades) {
+
+            // Déterminer les upgrades et données selon la planète courante
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const upgradesList = currentPlanet === 'terra' ? upgrades : (planetUpgrades[currentPlanet] || []);
+            const upgradesData = currentPlanet === 'terra' ? gameData.upgrades : (gameData.rebirth.planetData[currentPlanet]?.upgrades || {});
+
+            for (const upgrade of upgradesList) {
                 const unlocked = checkUnlock(upgrade.unlockReq);
-                const purchased = gameData.upgrades[upgrade.id];
+                const purchased = upgradesData[upgrade.id];
                 const affordable = canAfford(upgrade.cost);
                 if (!unlocked && !purchased) {
                     const almostUnlocked = checkAlmostUnlocked(upgrade.unlockReq);
@@ -3048,12 +3092,20 @@
         function renderAutomation() {
             const panel = document.getElementById('automation-panel');
             panel.innerHTML = '';
-            for (const automation of automations) {
+
+            // Déterminer les automatisations et données selon la planète courante
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const automationsList = currentPlanet === 'terra' ? automations : (planetAutomations[currentPlanet] || []);
+            const automationsData = currentPlanet === 'terra' ? gameData.automations : (gameData.rebirth.planetData[currentPlanet]?.automations || {});
+            const buildingsList = currentPlanet === 'terra' ? buildings : (planetBuildings[currentPlanet] || []);
+            const buildingsData = currentPlanet === 'terra' ? gameData.buildings : (gameData.rebirth.planetData[currentPlanet]?.buildings || {});
+
+            for (const automation of automationsList) {
                 const unlocked = checkUnlock(automation.unlockReq);
-                const purchased = gameData.automations[automation.id];
+                const purchased = automationsData[automation.id];
                 const enabled = gameData.automationEnabled[automation.id] !== false;
                 const affordable = canAfford(automation.cost);
-                const building = buildings.find(b => b.id === automation.buildingId);
+                const building = buildingsList.find(b => b.id === automation.buildingId);
 
                 if (!unlocked && !purchased) {
                     const almostUnlocked = checkAlmostUnlocked(automation.unlockReq);
@@ -3072,7 +3124,7 @@
                     }
                 }
 
-                const buildingCount = gameData.buildings[automation.buildingId] || 0;
+                const buildingCount = buildingsData[automation.buildingId] || 0;
                 const statusText = purchased ? `${building.name} : ${buildingCount} (toutes les ${automation.interval / 1000}s)` : '';
 
                 card.innerHTML = `
@@ -3104,9 +3156,19 @@
         }
 
         function buyAutomation(automation) {
-            if (!gameData.automations[automation.id] && canAfford(automation.cost)) {
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const automationsData = currentPlanet === 'terra' ? gameData.automations : (gameData.rebirth.planetData[currentPlanet]?.automations || {});
+
+            if (!automationsData[automation.id] && canAfford(automation.cost)) {
                 spendResources(automation.cost);
-                gameData.automations[automation.id] = true;
+                if (currentPlanet === 'terra') {
+                    gameData.automations[automation.id] = true;
+                } else {
+                    if (!gameData.rebirth.planetData[currentPlanet].automations) {
+                        gameData.rebirth.planetData[currentPlanet].automations = {};
+                    }
+                    gameData.rebirth.planetData[currentPlanet].automations[automation.id] = true;
+                }
                 gameData.automationEnabled[automation.id] = true;
                 gameData.automationTimers[automation.id] = Date.now();
                 updateResourceDisplay();
@@ -3924,7 +3986,15 @@
             const cost = getBuildingCost(building, amount);
             if (canAfford(cost)) {
                 spendResources(cost);
-                gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + amount;
+                const currentPlanet = gameData.rebirth.currentPlanet;
+                if (currentPlanet === 'terra') {
+                    gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + amount;
+                } else {
+                    if (!gameData.rebirth.planetData[currentPlanet].buildings) {
+                        gameData.rebirth.planetData[currentPlanet].buildings = {};
+                    }
+                    gameData.rebirth.planetData[currentPlanet].buildings[building.id] = (gameData.rebirth.planetData[currentPlanet].buildings[building.id] || 0) + amount;
+                }
                 updateResourceDisplay();
                 triggerFullRender();
                 checkAchievements();
@@ -3932,9 +4002,19 @@
         }
 
         function buyUpgrade(upgrade) {
-            if (!gameData.upgrades[upgrade.id] && canAfford(upgrade.cost)) {
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const upgradesData = currentPlanet === 'terra' ? gameData.upgrades : (gameData.rebirth.planetData[currentPlanet]?.upgrades || {});
+
+            if (!upgradesData[upgrade.id] && canAfford(upgrade.cost)) {
                 spendResources(upgrade.cost);
-                gameData.upgrades[upgrade.id] = true;
+                if (currentPlanet === 'terra') {
+                    gameData.upgrades[upgrade.id] = true;
+                } else {
+                    if (!gameData.rebirth.planetData[currentPlanet].upgrades) {
+                        gameData.rebirth.planetData[currentPlanet].upgrades = {};
+                    }
+                    gameData.rebirth.planetData[currentPlanet].upgrades[upgrade.id] = true;
+                }
                 if (upgrade.effect.multiply) {
                     for (const [resource, mult] of Object.entries(upgrade.effect.multiply)) {
                         gameData.multipliers[resource] *= mult;
@@ -3999,6 +4079,9 @@
         // ===== AUTOMATION LOGIC =====
         function processAutomation() {
             const now = Date.now();
+            const currentPlanet = gameData.rebirth.currentPlanet;
+
+            // Traiter les automatisations de Terra
             for (const automation of automations) {
                 if (!gameData.automations[automation.id]) continue;
                 if (gameData.automationEnabled[automation.id] === false) continue;
@@ -4015,6 +4098,31 @@
                     }
                 }
             }
+
+            // Traiter les automatisations de la planète courante (si différente de Terra)
+            if (currentPlanet !== 'terra' && planetAutomations[currentPlanet]) {
+                const planetAutomationsData = gameData.rebirth.planetData[currentPlanet]?.automations || {};
+                const planetBuildingsList = planetBuildings[currentPlanet] || [];
+                for (const automation of planetAutomations[currentPlanet]) {
+                    if (!planetAutomationsData[automation.id]) continue;
+                    if (gameData.automationEnabled[automation.id] === false) continue;
+                    const lastPurchase = gameData.automationTimers[automation.id] || 0;
+                    if (now - lastPurchase >= automation.interval) {
+                        const building = planetBuildingsList.find(b => b.id === automation.buildingId);
+                        if (building) {
+                            const cost = getBuildingCost(building);
+                            if (canAfford(cost)) {
+                                spendResources(cost);
+                                if (!gameData.rebirth.planetData[currentPlanet].buildings) {
+                                    gameData.rebirth.planetData[currentPlanet].buildings = {};
+                                }
+                                gameData.rebirth.planetData[currentPlanet].buildings[building.id] = (gameData.rebirth.planetData[currentPlanet].buildings[building.id] || 0) + 1;
+                                gameData.automationTimers[automation.id] = now;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // ===== GAME LOOP =====
@@ -4023,9 +4131,17 @@
 
         function gameLoop() {
             const production = calculateProduction();
+            const specialResources = ['plasma', 'crystals', 'magma', 'darkMatter'];
             for (const [resource, amount] of Object.entries(production)) {
-                gameData.resources[resource] += amount / 10;
-                gameData.totalEarned[resource] += amount / 10;
+                if (specialResources.includes(resource)) {
+                    // Ressources spéciales
+                    gameData.rebirth.specialResources[resource] = (gameData.rebirth.specialResources[resource] || 0) + amount / 10;
+                    gameData.rebirth.totalSpecialResources[resource] = (gameData.rebirth.totalSpecialResources[resource] || 0) + amount / 10;
+                } else {
+                    // Ressources de base
+                    gameData.resources[resource] = (gameData.resources[resource] || 0) + amount / 10;
+                    gameData.totalEarned[resource] = (gameData.totalEarned[resource] || 0) + amount / 10;
+                }
             }
             processAutomation();
             updateResourceDisplay();
@@ -4056,15 +4172,19 @@
 
         // Mise à jour légère des bâtiments (sans reconstruire le HTML)
         function updateBuildingsDisplay() {
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const buildingsList = currentPlanet === 'terra' ? buildings : (planetBuildings[currentPlanet] || []);
+            const buildingsData = currentPlanet === 'terra' ? gameData.buildings : (gameData.rebirth.planetData[currentPlanet]?.buildings || {});
+
             const cards = document.querySelectorAll('#buildings-panel .building-card');
             cards.forEach(card => {
                 const buildingId = card.dataset.buildingId;
                 if (!buildingId) return;
 
-                const building = buildings.find(b => b.id === buildingId);
+                const building = buildingsList.find(b => b.id === buildingId);
                 if (!building) return;
 
-                const count = gameData.buildings[building.id] || 0;
+                const count = buildingsData[building.id] || 0;
                 let buyQty = gameData.buyAmount;
                 if (buyQty === -1) buyQty = getMaxAffordable(building);
                 buyQty = Math.max(1, buyQty);
@@ -4097,15 +4217,19 @@
 
         // Mise à jour légère des améliorations
         function updateUpgradesDisplay() {
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const upgradesList = currentPlanet === 'terra' ? upgrades : (planetUpgrades[currentPlanet] || []);
+            const upgradesData = currentPlanet === 'terra' ? gameData.upgrades : (gameData.rebirth.planetData[currentPlanet]?.upgrades || {});
+
             const cards = document.querySelectorAll('#upgrades-panel .upgrade-card');
             cards.forEach(card => {
                 const upgradeId = card.dataset.upgradeId;
                 if (!upgradeId) return;
 
-                const upgrade = upgrades.find(u => u.id === upgradeId);
+                const upgrade = upgradesList.find(u => u.id === upgradeId);
                 if (!upgrade) return;
 
-                const purchased = gameData.upgrades[upgrade.id];
+                const purchased = upgradesData[upgrade.id];
                 if (purchased) return; // Déjà acheté, pas de mise à jour nécessaire
 
                 const affordable = canAfford(upgrade.cost);
@@ -4128,22 +4252,30 @@
 
         // Mise à jour légère des automatisations
         function updateAutomationDisplay() {
+            const currentPlanet = gameData.rebirth.currentPlanet;
+            const automationsList = currentPlanet === 'terra' ? automations : (planetAutomations[currentPlanet] || []);
+            const automationsData = currentPlanet === 'terra' ? gameData.automations : (gameData.rebirth.planetData[currentPlanet]?.automations || {});
+            const buildingsList = currentPlanet === 'terra' ? buildings : (planetBuildings[currentPlanet] || []);
+            const buildingsData = currentPlanet === 'terra' ? gameData.buildings : (gameData.rebirth.planetData[currentPlanet]?.buildings || {});
+
             const cards = document.querySelectorAll('#automation-panel .automation-card');
             cards.forEach(card => {
                 const automationId = card.dataset.automationId;
                 if (!automationId) return;
 
-                const automation = automations.find(a => a.id === automationId);
+                const automation = automationsList.find(a => a.id === automationId);
                 if (!automation) return;
 
-                const purchased = gameData.automations[automation.id];
+                const purchased = automationsData[automation.id];
                 if (purchased) {
                     // Mettre à jour le compteur de bâtiments
                     const statusEl = card.querySelector('.automation-status');
                     if (statusEl) {
-                        const buildingCount = gameData.buildings[automation.buildingId] || 0;
-                        const building = buildings.find(b => b.id === automation.buildingId);
-                        statusEl.textContent = `${building.name} : ${buildingCount} (toutes les ${automation.interval / 1000}s)`;
+                        const buildingCount = buildingsData[automation.buildingId] || 0;
+                        const building = buildingsList.find(b => b.id === automation.buildingId);
+                        if (building) {
+                            statusEl.textContent = `${building.name} : ${buildingCount} (toutes les ${automation.interval / 1000}s)`;
+                        }
                     }
                     return;
                 }
