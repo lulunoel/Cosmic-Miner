@@ -14,6 +14,38 @@
             box-sizing: border-box;
         }
 
+        /* Désactiver la sélection de texte sur tout le jeu */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+
+        /* Permettre la sélection uniquement dans les champs de saisie */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* Empêcher le glissement sur les éléments interactifs */
+        button, .building-card, .upgrade-card, .automation-card, .achievement-card, .mine-button, .action-btn {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Empêcher le double-clic de sélectionner du texte */
+        .mine-button, .action-btn, .building-card, .upgrade-card, .automation-card, .tab, .buy-btn {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         :root {
             --bg-dark: #0a0a1a;
             --bg-panel: rgba(15, 15, 35, 0.95);
@@ -2048,7 +2080,7 @@
             selector.querySelectorAll('.buy-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     gameData.buyAmount = parseInt(btn.dataset.amount);
-                    renderBuildings();
+                    triggerFullRender();
                 });
             });
             panel.appendChild(selector);
@@ -2073,6 +2105,7 @@
                 }
                 const card = document.createElement('div');
                 card.className = `building-card ${!unlocked ? 'locked' : ''} ${affordable && unlocked ? 'affordable' : ''}`;
+                card.dataset.buildingId = building.id;
                 let costHTML = '';
                 for (const [resource, amount] of Object.entries(cost)) {
                     const hasEnough = gameData.resources[resource] >= amount;
@@ -2085,10 +2118,11 @@
                 let totalProdHTML = '';
                 if (count > 0) {
                     const buildingMult = gameData.buildingMultipliers[building.id] || 1;
+                    const prestigeBonus = getPrestigeBonus();
                     let prodParts = [];
                     for (const [resource, baseAmount] of Object.entries(building.production)) {
                         const eventMult = eventMultipliers[resource] || 1;
-                        const totalProd = baseAmount * count * buildingMult * gameData.multipliers[resource] * eventMult;
+                        const totalProd = baseAmount * count * buildingMult * gameData.multipliers[resource] * eventMult * prestigeBonus.globalMultiplier;
                         prodParts.push(`+${formatNumber(totalProd)} ${resource}/s`);
                     }
                     totalProdHTML = `<div style="font-size: 0.7em; color: var(--accent-cyan); margin-top: 4px;">Total: ${prodParts.join(', ')}</div>`;
@@ -2140,6 +2174,7 @@
                 }
                 const card = document.createElement('div');
                 card.className = `upgrade-card ${!unlocked ? 'locked' : ''} ${purchased ? 'purchased' : ''} ${affordable && unlocked && !purchased ? 'affordable' : ''}`;
+                card.dataset.upgradeId = upgrade.id;
                 let costHTML = '';
                 if (!purchased) {
                     for (const [resource, amount] of Object.entries(upgrade.cost)) {
@@ -2338,6 +2373,7 @@
 
                 const card = document.createElement('div');
                 card.className = `automation-card ${!unlocked ? 'locked' : ''} ${purchased ? 'purchased' : ''} ${affordable && unlocked && !purchased ? 'affordable' : ''}`;
+                card.dataset.automationId = automation.id;
 
                 let costHTML = '';
                 if (!purchased) {
@@ -2385,14 +2421,14 @@
                 gameData.automationEnabled[automation.id] = true;
                 gameData.automationTimers[automation.id] = Date.now();
                 updateResourceDisplay();
-                renderAutomation();
+                triggerFullRender();
                 showNotification(`${automation.name} activé !`);
             }
         }
 
         function toggleAutomation(automationId) {
             gameData.automationEnabled[automationId] = !gameData.automationEnabled[automationId];
-            renderAutomation();
+            triggerFullRender();
         }
 
         // ===== PRESTIGE SYSTEM =====
@@ -2758,8 +2794,7 @@
                 spendResources(cost);
                 gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + amount;
                 updateResourceDisplay();
-                renderBuildings();
-                renderUpgrades();
+                triggerFullRender();
                 checkAchievements();
             }
         }
@@ -2779,7 +2814,7 @@
                     }
                 }
                 updateResourceDisplay();
-                renderUpgrades();
+                triggerFullRender();
                 showNotification(`${upgrade.name} acheté !`);
             }
         }
@@ -2844,6 +2879,8 @@
 
         // ===== GAME LOOP =====
         let tickCount = 0;
+        let needsFullRender = true; // Pour le premier rendu ou après achat
+
         function gameLoop() {
             const production = calculateProduction();
             for (const [resource, amount] of Object.entries(production)) {
@@ -2855,13 +2892,139 @@
             tickCount++;
             if (tickCount >= 5) {
                 tickCount = 0;
-                renderBuildings();
-                renderUpgrades();
-                renderAutomation();
-                renderPrestige();
-                renderStats();
+                if (needsFullRender) {
+                    // Rendu complet seulement quand nécessaire
+                    renderBuildings();
+                    renderUpgrades();
+                    renderAutomation();
+                    renderPrestige();
+                    renderStats();
+                    needsFullRender = false;
+                } else {
+                    // Mise à jour légère sans reconstruire le HTML
+                    updateBuildingsDisplay();
+                    updateUpgradesDisplay();
+                    updateAutomationDisplay();
+                }
             }
             checkAchievements();
+        }
+
+        // Mise à jour légère des bâtiments (sans reconstruire le HTML)
+        function updateBuildingsDisplay() {
+            const cards = document.querySelectorAll('#buildings-panel .building-card');
+            cards.forEach(card => {
+                const buildingId = card.dataset.buildingId;
+                if (!buildingId) return;
+
+                const building = buildings.find(b => b.id === buildingId);
+                if (!building) return;
+
+                const count = gameData.buildings[building.id] || 0;
+                let buyQty = gameData.buyAmount;
+                if (buyQty === -1) buyQty = getMaxAffordable(building);
+                buyQty = Math.max(1, buyQty);
+
+                const cost = getBuildingCost(building, buyQty);
+                const affordable = canAfford(cost);
+                const unlocked = checkUnlock(building.unlockReq);
+
+                // Mettre à jour les classes
+                card.classList.toggle('affordable', affordable && unlocked);
+                card.classList.toggle('locked', !unlocked);
+
+                // Mettre à jour le compteur
+                const countEl = card.querySelector('.building-count');
+                if (countEl) countEl.textContent = count;
+
+                // Mettre à jour les coûts
+                const costItems = card.querySelectorAll('.cost-item');
+                let i = 0;
+                for (const [resource, amount] of Object.entries(cost)) {
+                    if (costItems[i]) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costItems[i].textContent = `${formatNumber(amount)} ${resource}`;
+                        costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
+                    }
+                    i++;
+                }
+            });
+        }
+
+        // Mise à jour légère des améliorations
+        function updateUpgradesDisplay() {
+            const cards = document.querySelectorAll('#upgrades-panel .upgrade-card');
+            cards.forEach(card => {
+                const upgradeId = card.dataset.upgradeId;
+                if (!upgradeId) return;
+
+                const upgrade = upgrades.find(u => u.id === upgradeId);
+                if (!upgrade) return;
+
+                const purchased = gameData.upgrades[upgrade.id];
+                if (purchased) return; // Déjà acheté, pas de mise à jour nécessaire
+
+                const affordable = canAfford(upgrade.cost);
+                const unlocked = checkUnlock(upgrade.unlockReq);
+
+                card.classList.toggle('affordable', affordable && unlocked && !purchased);
+                card.classList.toggle('locked', !unlocked);
+
+                const costItems = card.querySelectorAll('.cost-item');
+                let i = 0;
+                for (const [resource, amount] of Object.entries(upgrade.cost)) {
+                    if (costItems[i]) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
+                    }
+                    i++;
+                }
+            });
+        }
+
+        // Mise à jour légère des automatisations
+        function updateAutomationDisplay() {
+            const cards = document.querySelectorAll('#automation-panel .automation-card');
+            cards.forEach(card => {
+                const automationId = card.dataset.automationId;
+                if (!automationId) return;
+
+                const automation = automations.find(a => a.id === automationId);
+                if (!automation) return;
+
+                const purchased = gameData.automations[automation.id];
+                if (purchased) {
+                    // Mettre à jour le compteur de bâtiments
+                    const statusEl = card.querySelector('.automation-status');
+                    if (statusEl) {
+                        const buildingCount = gameData.buildings[automation.buildingId] || 0;
+                        const building = buildings.find(b => b.id === automation.buildingId);
+                        statusEl.textContent = `${building.name} : ${buildingCount} (toutes les ${automation.interval / 1000}s)`;
+                    }
+                    return;
+                }
+
+                const affordable = canAfford(automation.cost);
+                const unlocked = checkUnlock(automation.unlockReq);
+
+                card.classList.toggle('affordable', affordable && unlocked && !purchased);
+                card.classList.toggle('locked', !unlocked);
+
+                const costItems = card.querySelectorAll('.cost-item');
+                let i = 0;
+                for (const [resource, amount] of Object.entries(automation.cost)) {
+                    if (costItems[i]) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
+                    }
+                    i++;
+                }
+            });
+        }
+
+        // Déclencher un rendu complet
+        function triggerFullRender() {
+            needsFullRender = true;
         }
 
         // ===== SAVE / LOAD =====
