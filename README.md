@@ -429,7 +429,7 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 **Lulunoel2016**
 
-- GitHub: [@Lulunoel2016](https://github.com/Lulunoel2016)
+- GitHub: [@lulunoel](https://github.com/lulunoel)
 
 ---
 
