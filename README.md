@@ -409,19 +409,39 @@ La durée des événements augmente avec le niveau de prestige (jusqu'à +100% a
 
 ## Contribution
 
-Les contributions sont les bienvenues ! Pour contribuer :
+Les contributions sont les bienvenues !
 
-1. Fork le projet
-2. Créez une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Committez vos changements (`git commit -m 'Ajout nouvelle fonctionnalité'`)
-4. Push sur la branche (`git push origin feature/nouvelle-fonctionnalite`)
+En soumettant une contribution, vous acceptez que votre code puisse être intégré au projet Cosmic Miner et distribué sous sa licence propriétaire.
+
+Étapes :
+
+1. Fork le projet  
+2. Créez une branche (`git checkout -b feature/nouvelle-fonctionnalite`)  
+3. Committez vos changements (`git commit -m 'Ajout nouvelle fonctionnalité'`)  
+4. Push sur la branche (`git push origin feature/nouvelle-fonctionnalite`)  
 5. Ouvrez une Pull Request
 
 ---
 
 ## Licence
 
-Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence **propriétaire**.
+
+### Vous êtes autorisé à :
+- Utiliser le projet à des fins personnelles ou internes  
+- Modifier le code pour vos propres besoins  
+- Créer des forks privés
+
+### Vous n'êtes PAS autorisé à :
+- Redistribuer publiquement le projet ou une version modifiée  
+- Publier le jeu sur une plateforme (Steam, itch.io, GitHub, etc.)  
+- Vendre ou monétiser le projet  
+
+Toute redistribution publique ou commerciale nécessite un **accord écrit préalable** avec l’auteur et une contrepartie définie ensemble.
+
+Voir :
+- `LICENSE.md`
+- `COMMERCIAL_LICENSE.md`
 
 ---
 
