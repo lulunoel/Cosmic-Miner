@@ -2,48 +2,87 @@
 
 **Un jeu idle/incrémental spatial développé avec Electron**
 
-Construisez votre empire cosmique en minant des astéroïdes, en générant de l'énergie et en recherchant de nouvelles technologies. Progressez même hors-ligne grâce au système de gains passifs, et atteignez des sommets de puissance grâce au système de prestige !
+Construisez votre empire cosmique en minant des astéroïdes, en générant de l'énergie et en recherchant de nouvelles technologies. Progressez même hors-ligne grâce au système de gains passifs, atteignez des sommets de puissance grâce au système de prestige, et explorez de nouvelles planètes grâce au système de rebirth !
 
 ---
 
 ## Table des Matières
 
-- [Aperçu](#aperçu)
-- [Fonctionnalités](#fonctionnalités)
-- [Installation](#installation)
-- [Lancement](#lancement)
-- [Build & Distribution](#build--distribution)
-- [Structure du Projet](#structure-du-projet)
-- [Mécanique de Jeu](#mécanique-de-jeu)
-  - [Ressources](#ressources)
-  - [Bâtiments](#bâtiments)
-  - [Améliorations](#améliorations)
-  - [Automatisations](#automatisations)
-  - [Système de Prestige](#système-de-prestige)
-  - [Succès](#succès)
-  - [Événements Aléatoires](#événements-aléatoires)
-  - [Progression Hors-ligne](#progression-hors-ligne)
-- [Technologies Utilisées](#technologies-utilisées)
-- [Raccourcis Clavier](#raccourcis-clavier)
-- [Système de Sauvegarde](#système-de-sauvegarde)
-- [Contribution](#contribution)
-- [Licence](#licence)
-- [Auteur](#auteur)
+- [Cosmic Miner](#cosmic-miner)
+  - [Table des Matières](#table-des-matières)
+  - [Aperçu](#aperçu)
+  - [Fonctionnalités](#fonctionnalités)
+  - [Installation](#installation)
+    - [Prérequis](#prérequis)
+    - [Étapes](#étapes)
+  - [Lancement](#lancement)
+    - [Mode Développement](#mode-développement)
+    - [Ouvrir dans un navigateur](#ouvrir-dans-un-navigateur)
+  - [Build \& Distribution](#build--distribution)
+    - [Construire pour Windows](#construire-pour-windows)
+    - [Construire pour macOS](#construire-pour-macos)
+    - [Construire pour Linux](#construire-pour-linux)
+  - [Structure du Projet](#structure-du-projet)
+  - [Mécanique de Jeu](#mécanique-de-jeu)
+    - [Ressources](#ressources)
+    - [Bâtiments](#bâtiments)
+    - [Améliorations](#améliorations)
+    - [Automatisations](#automatisations)
+    - [Système de Prestige](#système-de-prestige)
+      - [Niveaux de Prestige](#niveaux-de-prestige)
+      - [Ce qui est conservé après un prestige :](#ce-qui-est-conservé-après-un-prestige-)
+      - [Ce qui est réinitialisé :](#ce-qui-est-réinitialisé-)
+    - [Système de Rebirth](#système-de-rebirth)
+      - [Planètes](#planètes)
+      - [Ressources Spéciales](#ressources-spéciales)
+      - [Niveaux de Rebirth](#niveaux-de-rebirth)
+      - [Ce qui est conservé après un rebirth :](#ce-qui-est-conservé-après-un-rebirth-)
+      - [Ce qui est réinitialisé :](#ce-qui-est-réinitialisé--1)
+    - [Succès](#succès)
+      - [Minerai (5)](#minerai-5)
+      - [Énergie (2)](#énergie-2)
+      - [Crédits (3)](#crédits-3)
+      - [Recherche (3)](#recherche-3)
+      - [Bâtiments (9)](#bâtiments-9)
+      - [Clics (3)](#clics-3)
+      - [Prestige (8)](#prestige-8)
+      - [Rebirth (8)](#rebirth-8)
+    - [Événements Aléatoires](#événements-aléatoires)
+    - [Progression Hors-ligne](#progression-hors-ligne)
+  - [Technologies Utilisées](#technologies-utilisées)
+    - [Intégrations Optionnelles](#intégrations-optionnelles)
+  - [Raccourcis Clavier](#raccourcis-clavier)
+  - [Système de Sauvegarde](#système-de-sauvegarde)
+    - [Fréquence](#fréquence)
+    - [Données Sauvegardées](#données-sauvegardées)
+    - [Emplacements](#emplacements)
+  - [Contribution](#contribution)
+  - [Licence](#licence)
+    - [Vous êtes autorisé à :](#vous-êtes-autorisé-à-)
+    - [Vous n'êtes PAS autorisé à :](#vous-nêtes-pas-autorisé-à-)
+  - [Auteur](#auteur)
+  - [Paramètres Techniques](#paramètres-techniques)
+    - [Boucle de Jeu](#boucle-de-jeu)
+    - [Fenêtre Electron](#fenêtre-electron)
+    - [Formule de Notation](#formule-de-notation)
+    - [Formules de Production](#formules-de-production)
 
 ---
 
 ## Aperçu
 
-Cosmic Miner est un jeu idle/incrémental où vous incarnez un mineur spatial. Cliquez pour miner du minerai, construisez des installations automatisées, débloquez des améliorations et regardez votre empire cosmique grandir de manière exponentielle. Atteignez le sommet de la puissance grâce au système de prestige !
+Cosmic Miner est un jeu idle/incrémental où vous incarnez un mineur spatial. Cliquez pour miner du minerai, construisez des installations automatisées, débloquez des améliorations et regardez votre empire cosmique grandir de manière exponentielle. Atteignez le sommet de la puissance grâce au système de prestige et explorez de nouvelles planètes grâce au système de rebirth !
 
 **Caractéristiques principales :**
 - Interface sombre thématique spatiale avec animations
-- 4 types de ressources interconnectées
+- 4 types de ressources principales + 4 ressources spéciales
 - 9 bâtiments de production avec coûts exponentiels
 - 8 améliorations permanentes
 - 9 automatisations indépendantes
 - 5 niveaux de prestige avec bonus cumulatifs
-- 31 succès à débloquer (dont 8 liés au prestige)
+- 5 planètes à explorer avec le système de rebirth
+- 5 niveaux de rebirth avec bonus permanents
+- 39 succès à débloquer (dont 8 prestige et 8 rebirth)
 - 5 événements aléatoires bonus
 - Progression hors-ligne (50% à 100% selon le prestige)
 
@@ -60,7 +99,9 @@ Cosmic Miner est un jeu idle/incrémental où vous incarnez un mineur spatial. C
 | **Améliorations** | Achetez des bonus permanents multiplicateurs |
 | **Automatisation** | Activez l'achat automatique de bâtiments |
 | **Prestige** | Réinitialisez pour des bonus permanents puissants |
-| **Succès** | Débloquez 31 succès basés sur vos actions |
+| **Rebirth** | Voyagez vers de nouvelles planètes pour des bonus méta-progressifs |
+| **Planètes** | 5 planètes uniques avec ressources et contenus exclusifs |
+| **Succès** | Débloquez 39 succès basés sur vos actions |
 | **Événements** | Profitez de bonus temporaires aléatoires |
 | **Hors-ligne** | Gagnez des ressources même déconnecté |
 | **Sauvegarde Cloud** | Compatible CrazyGames et Steam |
@@ -258,9 +299,71 @@ Le prestige vous permet de réinitialiser votre progression en échange de **bon
 
 ---
 
+### Système de Rebirth
+
+Le rebirth est un système de méta-progression qui vous permet d'explorer de **nouvelles planètes** avec des ressources et contenus uniques. C'est le niveau au-dessus du prestige !
+
+#### Planètes
+
+5 planètes à explorer, chacune avec une ressource spéciale et un thème unique :
+
+| Planète | Icône | Ressource Spéciale | Description |
+|---------|-------|-------------------|-------------|
+| **Terra Cosmique** | 🌍 | - | Planète de départ, ressources classiques |
+| **Nova Prime** | ⭐ | Plasma (rose) | Planète volcanique, énergie intense |
+| **Cryosia** | ❄️ | Cristaux (cyan) | Monde gelé, cristaux précieux |
+| **Vulcanis** | 🌋 | Magma (orange) | Planète de lave, ressources rares |
+| **Nexus Omega** | 🌌 | Matière Noire (violet) | Dimension parallèle, pouvoir ultime |
+
+**Conditions de déblocage :**
+- **Terra Cosmique** : Disponible dès le début
+- **Nova Prime** : Rebirth niveau 1
+- **Cryosia** : Rebirth niveau 2
+- **Vulcanis** : Rebirth niveau 3
+- **Nexus Omega** : Rebirth niveau 5
+
+#### Ressources Spéciales
+
+Chaque planète (sauf Terra) possède une ressource spéciale unique :
+
+| Ressource | Couleur | Planète | Utilisation |
+|-----------|---------|---------|-------------|
+| **Plasma** | 🩷 Rose | Nova Prime | Améliorations énergétiques avancées |
+| **Cristaux** | 💎 Cyan | Cryosia | Technologies de recherche |
+| **Magma** | 🔥 Orange | Vulcanis | Production massive |
+| **Matière Noire** | 💜 Violet | Nexus Omega | Bonus ultimes |
+
+#### Niveaux de Rebirth
+
+| Niveau | Nom | Prérequis | Bonus |
+|--------|-----|-----------|-------|
+| **1** | Voyageur Cosmique | 1Qa minerai total, Prestige 3, 1Qa crédits | x2 production globale, débloque Nova Prime |
+| **2** | Explorateur Galactique | 1Qi minerai, Prestige 4, 3 planètes | x3 production, -10% coûts, débloque Cryosia |
+| **3** | Maître des Mondes | 1Sx minerai, Prestige 5, 4 planètes | x5 production, -20% coûts, débloque Vulcanis |
+| **4** | Conquérant Universel | 1Sp minerai, toutes les planètes | x10 production, -30% coûts, +50% événements |
+| **5** | Entité Primordiale | 1Oc minerai, 30+ succès | x25 production, -50% coûts, débloque Nexus Omega |
+
+**Points de Rebirth :** Chaque rebirth vous accorde des points qui amplifient vos bonus globaux !
+
+#### Ce qui est conservé après un rebirth :
+- Niveau de rebirth et points
+- Planètes débloquées
+- Ressources spéciales accumulées
+- Tous les succès
+- Statistiques globales
+
+#### Ce qui est réinitialisé :
+- Niveau de prestige (repart à 0)
+- Toutes les ressources de base
+- Tous les bâtiments
+- Toutes les améliorations
+- Toutes les automatisations
+
+---
+
 ### Succès
 
-31 succès répartis en catégories :
+39 succès répartis en catégories :
 
 #### Minerai (5)
 | Succès | Condition |
@@ -322,6 +425,18 @@ Le prestige vous permet de réinitialiser votre progression en échange de **bon
 | Divinité Astrale | Atteindre prestige niveau 5 |
 | Maître du Prestige | Effectuer 5 prestiges |
 | Légende Éternelle | Effectuer 10 prestiges |
+
+#### Rebirth (8)
+| Succès | Condition |
+|--------|-----------|
+| Renaissance | Effectuer 1 rebirth |
+| Voyageur Cosmique | Atteindre rebirth niveau 1 |
+| Explorateur Galactique | Atteindre rebirth niveau 2 |
+| Maître des Mondes | Atteindre rebirth niveau 3 |
+| Conquérant Universel | Atteindre rebirth niveau 4 |
+| Entité Primordiale | Atteindre rebirth niveau 5 |
+| Maître du Rebirth | Effectuer 5 rebirths |
+| Collectionneur de Planètes | Débloquer toutes les planètes |
 
 ---
 
@@ -396,6 +511,8 @@ La durée des événements augmente avec le niveau de prestige (jusqu'à +100% a
 - Améliorations achetées
 - Automatisations actives
 - **Données de prestige (niveau, total, lifetime stats)**
+- **Données de rebirth (niveau, points, planète courante, planètes débloquées)**
+- **Ressources spéciales (plasma, cristaux, magma, matière noire)**
 - Succès débloqués
 - Statistiques (clics, temps de jeu)
 - État des multiplicateurs
@@ -473,11 +590,13 @@ Le jeu utilise un système de notation avec 100+ unités :
 
 ### Formules de Production
 ```
-Production = BaseProduction × BuildingCount × BuildingMultiplier × GlobalMultiplier × EventMultiplier × PrestigeMultiplier
+Production = BaseProduction × BuildingCount × BuildingMultiplier × GlobalMultiplier × EventMultiplier × PrestigeMultiplier × RebirthMultiplier
 
-ClickProduction = 1 × OreMultiplier × PrestigeClickMultiplier
+ClickProduction = 1 × OreMultiplier × PrestigeClickMultiplier × RebirthMultiplier
 
-BuildingCost = BaseCost × 1.15^count × (1 - PrestigeCostReduction)
+BuildingCost = BaseCost × 1.15^count × (1 - PrestigeCostReduction) × (1 - RebirthCostReduction)
+
+RebirthMultiplier = 1 + (RebirthLevel × 0.5) + (RebirthPoints × 0.1)
 ```
 
 ---

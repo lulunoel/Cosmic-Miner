@@ -14,6 +14,38 @@
             box-sizing: border-box;
         }
 
+        /* Désactiver la sélection de texte sur tout le jeu */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+
+        /* Permettre la sélection uniquement dans les champs de saisie */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* Empêcher le glissement sur les éléments interactifs */
+        button, .building-card, .upgrade-card, .automation-card, .achievement-card, .mine-button, .action-btn {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Empêcher le double-clic de sélectionner du texte */
+        .mine-button, .action-btn, .building-card, .upgrade-card, .automation-card, .tab, .buy-btn {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         :root {
             --bg-dark: #0a0a1a;
             --bg-panel: rgba(15, 15, 35, 0.95);
@@ -1281,6 +1313,340 @@
             opacity: 0.3;
             text-shadow: none;
         }
+
+        /* ===== REBIRTH & PLANETS SYSTEM ===== */
+        .planet-selector {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            justify-content: center;
+        }
+
+        .planet-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+
+        .planet-btn:hover:not(.locked) {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .planet-btn.active {
+            border-color: var(--accent-gold);
+            background: rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .planet-btn.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .planet-btn .planet-icon {
+            font-size: 1.5em;
+        }
+
+        .planet-btn .planet-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65em;
+            color: var(--text-secondary);
+        }
+
+        .planet-btn.active .planet-name {
+            color: var(--accent-gold);
+        }
+
+        /* Planet-specific themes */
+        .planet-terra { --planet-color: #00d4ff; }
+        .planet-nova { --planet-color: #ff6b35; }
+        .planet-cryo { --planet-color: #00ffff; }
+        .planet-vulcan { --planet-color: #ff4444; }
+        .planet-nexus { --planet-color: #9933ff; }
+
+        /* Rebirth Panel */
+        .rebirth-header {
+            background: linear-gradient(135deg, rgba(153, 51, 255, 0.2), rgba(255, 51, 102, 0.2));
+            border: 2px solid #9933ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rebirth-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(153, 51, 255, 0.1) 0%, transparent 50%);
+            animation: rebirthGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes rebirthGlow {
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.5; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+        }
+
+        .rebirth-level {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9933ff, #ff3366);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rebirth-points {
+            font-size: 1em;
+            color: #ff3366;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rebirth-multiplier {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            color: var(--accent-green);
+            margin-top: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rebirth-button {
+            width: 100%;
+            padding: 18px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: 2px solid #9933ff;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(153, 51, 255, 0.3), rgba(255, 51, 102, 0.3));
+            color: #ff3366;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .rebirth-button:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(153, 51, 255, 0.5), rgba(255, 51, 102, 0.5));
+            box-shadow: 0 0 40px rgba(153, 51, 255, 0.6);
+            transform: scale(1.02);
+        }
+
+        .rebirth-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .planet-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .planet-card.unlocked {
+            border-color: var(--accent-green);
+        }
+
+        .planet-card.current {
+            border-color: var(--accent-gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .planet-card.locked {
+            opacity: 0.5;
+        }
+
+        .planet-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .planet-card-icon {
+            font-size: 2em;
+        }
+
+        .planet-card-info {
+            flex: 1;
+        }
+
+        .planet-card-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            font-weight: 700;
+        }
+
+        .planet-card-resource {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        .planet-card-status {
+            font-size: 1.2em;
+        }
+
+        .planet-card-desc {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .planet-card-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 0.75em;
+        }
+
+        .planet-stat {
+            background: rgba(255,255,255,0.05);
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .planet-stat-label {
+            color: var(--text-secondary);
+        }
+
+        .planet-stat-value {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+        }
+
+        /* New resource colors */
+        .resource-value.plasma { color: #ff6b35; }
+        .resource-value.crystals { color: #00ffff; }
+        .resource-value.magma { color: #ff4444; }
+        .resource-value.darkMatter { color: #9933ff; }
+
+        /* Galaxy map styling */
+        .galaxy-map {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .galaxy-line {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            top: 50%;
+            left: 15%;
+            right: 15%;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .galaxy-planet {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            background: var(--bg-card);
+            border: 3px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .galaxy-planet:hover:not(.locked) {
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .galaxy-planet.active {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+            transform: scale(1.1);
+        }
+
+        .galaxy-planet.unlocked {
+            border-color: var(--accent-green);
+        }
+
+        .galaxy-planet.locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
+        .rebirth-warning {
+            font-size: 0.75em;
+            color: var(--accent-red);
+            text-align: center;
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255, 68, 102, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 68, 102, 0.3);
+        }
+
+        .rebirth-unlock {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 212, 255, 0.1));
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .rebirth-unlock-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-green);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .rebirth-unlock-planet {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .rebirth-unlock-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            color: var(--text-primary);
+        }
     </style>
     <script src="https://sdk.crazygames.com/crazygames-sdk-v2.js"></script>
 </head>
@@ -1296,8 +1662,12 @@
     <div class="game-container">
         <!-- PANNEAU GAUCHE - RESSOURCES -->
         <div class="left-panel">
-            <h1 class="game-title">COSMIC MINER</h1>
-            
+            <!-- Sélecteur de planète -->
+            <div id="planet-selector" class="planet-selector"></div>
+
+            <h1 class="game-title" id="game-title">COSMIC MINER</h1>
+
+            <!-- Ressources de base (toutes planètes) -->
             <div class="resource-card">
                 <div class="resource-header">
                     <img src="https://img.icons8.com/color/48/asteroid.png" class="resource-icon" alt="Minerai">
@@ -1333,6 +1703,26 @@
                 <div class="resource-value research" id="research-value">0</div>
                 <div class="resource-rate" id="research-rate">+0/sec</div>
             </div>
+
+            <!-- Ressource spéciale de la planète (affichée dynamiquement) -->
+            <div class="resource-card" id="special-resource-card" style="display: none;">
+                <div class="resource-header">
+                    <img src="" class="resource-icon" id="special-resource-icon" alt="Ressource">
+                    <span class="resource-name" id="special-resource-name">RESSOURCE</span>
+                </div>
+                <div class="resource-value" id="special-resource-value">0</div>
+                <div class="resource-rate" id="special-resource-rate">+0/sec</div>
+            </div>
+
+            <!-- Points de Rebirth -->
+            <div class="resource-card" id="rebirth-points-card" style="display: none; border-color: #9933ff;">
+                <div class="resource-header">
+                    <span style="font-size: 1.5em;">🌌</span>
+                    <span class="resource-name">POINTS REBIRTH</span>
+                </div>
+                <div class="resource-value" id="rebirth-points-value" style="color: #9933ff;">0</div>
+                <div class="resource-rate" id="rebirth-multiplier-display" style="color: #ff3366;">x1 production</div>
+            </div>
         </div>
 
         <!-- PANNEAU CENTRAL - MINAGE -->
@@ -1367,6 +1757,7 @@
                 <button class="tab" data-tab="upgrades">Amélior.</button>
                 <button class="tab" data-tab="automation">Auto</button>
                 <button class="tab" data-tab="prestige">Prestige</button>
+                <button class="tab" data-tab="rebirth">Rebirth</button>
                 <button class="tab" data-tab="achievements">Succès</button>
                 <button class="tab" data-tab="stats">Stats</button>
             </div>
@@ -1376,6 +1767,7 @@
                 <div class="tab-panel" id="upgrades-panel"></div>
                 <div class="tab-panel" id="automation-panel"></div>
                 <div class="tab-panel" id="prestige-panel"></div>
+                <div class="tab-panel" id="rebirth-panel"></div>
                 <div class="tab-panel" id="achievements-panel"></div>
                 <div class="tab-panel" id="stats-panel"></div>
             </div>
@@ -1436,6 +1828,35 @@
                 lifetimeEnergy: 0,
                 lifetimeCredits: 0,
                 lifetimeResearch: 0
+            },
+            // Rebirth System
+            rebirth: {
+                level: 0,
+                totalRebirths: 0,
+                points: 0,
+                currentPlanet: 'terra',
+                unlockedPlanets: ['terra'],
+                // Ressources spéciales par planète
+                specialResources: {
+                    plasma: 0,
+                    crystals: 0,
+                    magma: 0,
+                    darkMatter: 0
+                },
+                totalSpecialResources: {
+                    plasma: 0,
+                    crystals: 0,
+                    magma: 0,
+                    darkMatter: 0
+                },
+                // Données par planète
+                planetData: {
+                    terra: { prestige: { level: 0, totalPrestiges: 0 }, buildings: {}, upgrades: {}, automations: {} },
+                    nova: { prestige: { level: 0, totalPrestiges: 0 }, buildings: {}, upgrades: {}, automations: {} },
+                    cryo: { prestige: { level: 0, totalPrestiges: 0 }, buildings: {}, upgrades: {}, automations: {} },
+                    vulcan: { prestige: { level: 0, totalPrestiges: 0 }, buildings: {}, upgrades: {}, automations: {} },
+                    nexus: { prestige: { level: 0, totalPrestiges: 0 }, buildings: {}, upgrades: {}, automations: {} }
+                }
             }
         };
 
@@ -1530,6 +1951,230 @@
                     eventChance: 2.0              // x2 chance d'événements
                 },
                 description: 'x25 production, -50% coûts, 100% offline, événements x2'
+            }
+        ];
+
+        // ===== CONFIGURATION DES PLANÈTES =====
+        const planets = {
+            terra: {
+                id: 'terra',
+                name: 'Terra Cosmique',
+                icon: '🌍',
+                color: '#00d4ff',
+                description: 'Votre planète de départ. Minez des astéroïdes et construisez votre empire spatial.',
+                specialResource: null,
+                unlockRequirement: null, // Toujours débloquée
+                theme: 'Minage Spatial'
+            },
+            nova: {
+                id: 'nova',
+                name: 'Nova Prime',
+                icon: '⭐',
+                color: '#ff6b35',
+                description: 'Une étoile mourante riche en plasma. Récoltez cette énergie stellaire pure.',
+                specialResource: {
+                    id: 'plasma',
+                    name: 'PLASMA STELLAIRE',
+                    icon: 'https://img.icons8.com/color/48/fire-element.png',
+                    color: '#ff6b35'
+                },
+                unlockRequirement: { rebirthLevel: 1 },
+                theme: 'Énergie Stellaire'
+            },
+            cryo: {
+                id: 'cryo',
+                name: 'Cryosia',
+                icon: '❄️',
+                color: '#00ffff',
+                description: 'Une planète de glace éternelle. Des cristaux rares se forment dans ses profondeurs.',
+                specialResource: {
+                    id: 'crystals',
+                    name: 'CRISTAUX GLACÉS',
+                    icon: 'https://img.icons8.com/color/48/crystal.png',
+                    color: '#00ffff'
+                },
+                unlockRequirement: { rebirthLevel: 2 },
+                theme: 'Cristaux de Glace'
+            },
+            vulcan: {
+                id: 'vulcan',
+                name: 'Vulcanis',
+                icon: '🌋',
+                color: '#ff4444',
+                description: 'Un monde volcanique infernal. Le magma ici est infusé d\'énergie cosmique.',
+                specialResource: {
+                    id: 'magma',
+                    name: 'MAGMA COSMIQUE',
+                    icon: 'https://img.icons8.com/color/48/lava.png',
+                    color: '#ff4444'
+                },
+                unlockRequirement: { rebirthLevel: 3 },
+                theme: 'Forge Volcanique'
+            },
+            nexus: {
+                id: 'nexus',
+                name: 'Nexus Omega',
+                icon: '🌌',
+                color: '#9933ff',
+                description: 'La dimension finale. Ici, la matière noire coule comme de l\'eau.',
+                specialResource: {
+                    id: 'darkMatter',
+                    name: 'MATIÈRE NOIRE',
+                    icon: 'https://img.icons8.com/color/48/black-hole.png',
+                    color: '#9933ff'
+                },
+                unlockRequirement: { rebirthLevel: 4 },
+                theme: 'Dimension Sombre'
+            }
+        };
+
+        // Bâtiments par planète (en plus des bâtiments de base)
+        const planetBuildings = {
+            nova: [
+                { id: 'plasmaExtractor', name: 'Extracteur de Plasma', desc: '+5 plasma/sec', icon: 'https://img.icons8.com/color/48/fire-element.png', baseCost: { ore: 50000, energy: 20000 }, production: { plasma: 5 }, unlockReq: null },
+                { id: 'solarCollector', name: 'Collecteur Solaire', desc: '+25 plasma/sec', icon: 'https://img.icons8.com/color/48/sun.png', baseCost: { ore: 500000, plasma: 100 }, production: { plasma: 25 }, unlockReq: { buildings: { plasmaExtractor: 5 } } },
+                { id: 'stellarForge', name: 'Forge Stellaire', desc: '+100 plasma/sec, +50 énergie/sec', icon: 'https://img.icons8.com/color/48/forge.png', baseCost: { ore: 5000000, plasma: 1000, credits: 100000 }, production: { plasma: 100, energy: 50 }, unlockReq: { buildings: { solarCollector: 5 } } },
+                { id: 'novaCore', name: 'Cœur de Nova', desc: '+500 plasma/sec, +200 tous/sec', icon: 'https://img.icons8.com/color/48/bright-moon.png', baseCost: { ore: 100000000, plasma: 50000, research: 10000 }, production: { plasma: 500, ore: 200, energy: 200, credits: 200 }, unlockReq: { buildings: { stellarForge: 3 } } }
+            ],
+            cryo: [
+                { id: 'crystalMine', name: 'Mine de Cristaux', desc: '+5 cristaux/sec', icon: 'https://img.icons8.com/color/48/crystal.png', baseCost: { ore: 100000, energy: 50000 }, production: { crystals: 5 }, unlockReq: null },
+                { id: 'frostExtractor', name: 'Extracteur Glacial', desc: '+25 cristaux/sec', icon: 'https://img.icons8.com/color/48/winter.png', baseCost: { ore: 1000000, crystals: 200 }, production: { crystals: 25 }, unlockReq: { buildings: { crystalMine: 5 } } },
+                { id: 'cryoLab', name: 'Laboratoire Cryo', desc: '+100 cristaux/sec, +10 recherche/sec', icon: 'https://img.icons8.com/color/48/laboratory.png', baseCost: { ore: 10000000, crystals: 2000, research: 5000 }, production: { crystals: 100, research: 10 }, unlockReq: { buildings: { frostExtractor: 5 } } },
+                { id: 'iceCore', name: 'Cœur de Glace', desc: '+500 cristaux/sec, +300 tous/sec', icon: 'https://img.icons8.com/color/48/snowflake.png', baseCost: { ore: 500000000, crystals: 100000, credits: 1000000 }, production: { crystals: 500, ore: 300, energy: 300, credits: 300 }, unlockReq: { buildings: { cryoLab: 3 } } }
+            ],
+            vulcan: [
+                { id: 'magmaWell', name: 'Puits de Magma', desc: '+5 magma/sec', icon: 'https://img.icons8.com/color/48/lava.png', baseCost: { ore: 500000, energy: 200000 }, production: { magma: 5 }, unlockReq: null },
+                { id: 'volcanicDrill', name: 'Foreuse Volcanique', desc: '+25 magma/sec', icon: 'https://img.icons8.com/color/48/drill.png', baseCost: { ore: 5000000, magma: 500 }, production: { magma: 25 }, unlockReq: { buildings: { magmaWell: 5 } } },
+                { id: 'infernoForge', name: 'Forge Infernale', desc: '+100 magma/sec, +100 minerai/sec', icon: 'https://img.icons8.com/color/48/anvil.png', baseCost: { ore: 50000000, magma: 5000, credits: 500000 }, production: { magma: 100, ore: 100 }, unlockReq: { buildings: { volcanicDrill: 5 } } },
+                { id: 'magmaCore', name: 'Cœur de Magma', desc: '+500 magma/sec, +500 tous/sec', icon: 'https://img.icons8.com/color/48/volcano.png', baseCost: { ore: 1000000000, magma: 200000, research: 50000 }, production: { magma: 500, ore: 500, energy: 500, credits: 500 }, unlockReq: { buildings: { infernoForge: 3 } } }
+            ],
+            nexus: [
+                { id: 'voidRift', name: 'Faille du Vide', desc: '+5 matière noire/sec', icon: 'https://img.icons8.com/color/48/black-hole.png', baseCost: { ore: 1000000, energy: 500000 }, production: { darkMatter: 5 }, unlockReq: null },
+                { id: 'darkExtractor', name: 'Extracteur Sombre', desc: '+25 matière noire/sec', icon: 'https://img.icons8.com/color/48/galaxy.png', baseCost: { ore: 10000000, darkMatter: 1000 }, production: { darkMatter: 25 }, unlockReq: { buildings: { voidRift: 5 } } },
+                { id: 'dimensionGate', name: 'Porte Dimensionnelle', desc: '+100 matière noire/sec, x2 production', icon: 'https://img.icons8.com/color/48/portal.png', baseCost: { ore: 100000000, darkMatter: 10000, research: 100000 }, production: { darkMatter: 100 }, unlockReq: { buildings: { darkExtractor: 5 } }, special: { globalMultiplier: 2 } },
+                { id: 'omegaCore', name: 'Cœur Omega', desc: '+1000 matière noire/sec, +1000 tous/sec', icon: 'https://img.icons8.com/color/48/pentagram.png', baseCost: { ore: 10000000000, darkMatter: 500000, credits: 10000000 }, production: { darkMatter: 1000, ore: 1000, energy: 1000, credits: 1000, research: 100 }, unlockReq: { buildings: { dimensionGate: 3 } } }
+            ]
+        };
+
+        // Améliorations par planète
+        const planetUpgrades = {
+            nova: [
+                { id: 'plasmaBoost', name: 'Amplificateur Plasma', desc: 'Production plasma x3', icon: 'https://img.icons8.com/color/48/fire-element.png', cost: { credits: 100000, plasma: 500 }, unlockReq: { plasma: 100 }, effect: { multiplyResource: { plasma: 3 } } },
+                { id: 'solarFusion', name: 'Fusion Solaire', desc: 'Production énergie x5', icon: 'https://img.icons8.com/color/48/sun.png', cost: { credits: 500000, plasma: 5000 }, unlockReq: { buildings: { solarCollector: 10 } }, effect: { multiply: { energy: 5 } } },
+                { id: 'stellarMastery', name: 'Maîtrise Stellaire', desc: 'Toute production x2', icon: 'https://img.icons8.com/color/48/bright-moon.png', cost: { credits: 5000000, plasma: 50000, research: 10000 }, unlockReq: { buildings: { novaCore: 1 } }, effect: { multiply: { ore: 2, energy: 2, credits: 2, research: 2, plasma: 2 } } }
+            ],
+            cryo: [
+                { id: 'crystalResonance', name: 'Résonance Cristalline', desc: 'Production cristaux x3', icon: 'https://img.icons8.com/color/48/crystal.png', cost: { credits: 200000, crystals: 1000 }, unlockReq: { crystals: 200 }, effect: { multiplyResource: { crystals: 3 } } },
+                { id: 'frostScience', name: 'Science du Froid', desc: 'Production recherche x5', icon: 'https://img.icons8.com/color/48/laboratory.png', cost: { credits: 1000000, crystals: 10000 }, unlockReq: { buildings: { cryoLab: 5 } }, effect: { multiply: { research: 5 } } },
+                { id: 'cryoMastery', name: 'Maîtrise Glaciale', desc: 'Toute production x2', icon: 'https://img.icons8.com/color/48/snowflake.png', cost: { credits: 10000000, crystals: 100000, research: 20000 }, unlockReq: { buildings: { iceCore: 1 } }, effect: { multiply: { ore: 2, energy: 2, credits: 2, research: 2, crystals: 2 } } }
+            ],
+            vulcan: [
+                { id: 'magmaInfusion', name: 'Infusion Magmatique', desc: 'Production magma x3', icon: 'https://img.icons8.com/color/48/lava.png', cost: { credits: 500000, magma: 2000 }, unlockReq: { magma: 500 }, effect: { multiplyResource: { magma: 3 } } },
+                { id: 'volcanicPower', name: 'Puissance Volcanique', desc: 'Production minerai x5', icon: 'https://img.icons8.com/color/48/volcano.png', cost: { credits: 2000000, magma: 20000 }, unlockReq: { buildings: { infernoForge: 5 } }, effect: { multiply: { ore: 5 } } },
+                { id: 'magmaMastery', name: 'Maîtrise du Magma', desc: 'Toute production x2', icon: 'https://img.icons8.com/color/48/fire-element.png', cost: { credits: 20000000, magma: 200000, research: 50000 }, unlockReq: { buildings: { magmaCore: 1 } }, effect: { multiply: { ore: 2, energy: 2, credits: 2, research: 2, magma: 2 } } }
+            ],
+            nexus: [
+                { id: 'voidEnergy', name: 'Énergie du Vide', desc: 'Production matière noire x3', icon: 'https://img.icons8.com/color/48/black-hole.png', cost: { credits: 1000000, darkMatter: 5000 }, unlockReq: { darkMatter: 1000 }, effect: { multiplyResource: { darkMatter: 3 } } },
+                { id: 'dimensionalRift', name: 'Faille Dimensionnelle', desc: 'Toute production x3', icon: 'https://img.icons8.com/color/48/portal.png', cost: { credits: 10000000, darkMatter: 100000 }, unlockReq: { buildings: { dimensionGate: 3 } }, effect: { multiply: { ore: 3, energy: 3, credits: 3, research: 3, darkMatter: 3 } } },
+                { id: 'omegaMastery', name: 'Maîtrise Omega', desc: 'TOUTE production x5, Points rebirth +50%', icon: 'https://img.icons8.com/color/48/pentagram.png', cost: { credits: 100000000, darkMatter: 1000000, research: 500000 }, unlockReq: { buildings: { omegaCore: 1 } }, effect: { multiply: { ore: 5, energy: 5, credits: 5, research: 5, darkMatter: 5 }, rebirthBonus: 0.5 } }
+            ]
+        };
+
+        // Automatisations par planète
+        const planetAutomations = {
+            nova: [
+                { id: 'autoPlasmaExtractor', name: 'Auto-Plasma', desc: 'Achète automatiquement des Extracteurs de Plasma', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'plasmaExtractor', cost: { credits: 50000, plasma: 200 }, unlockReq: { buildings: { plasmaExtractor: 5 } }, interval: 5000 },
+                { id: 'autoSolarCollector', name: 'Auto-Collecteur', desc: 'Achète automatiquement des Collecteurs Solaires', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'solarCollector', cost: { credits: 200000, plasma: 1000 }, unlockReq: { buildings: { solarCollector: 3 } }, interval: 6000 }
+            ],
+            cryo: [
+                { id: 'autoCrystalMine', name: 'Auto-Cristaux', desc: 'Achète automatiquement des Mines de Cristaux', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'crystalMine', cost: { credits: 100000, crystals: 500 }, unlockReq: { buildings: { crystalMine: 5 } }, interval: 5000 },
+                { id: 'autoFrostExtractor', name: 'Auto-Givre', desc: 'Achète automatiquement des Extracteurs Glaciaux', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'frostExtractor', cost: { credits: 500000, crystals: 2000 }, unlockReq: { buildings: { frostExtractor: 3 } }, interval: 6000 }
+            ],
+            vulcan: [
+                { id: 'autoMagmaWell', name: 'Auto-Magma', desc: 'Achète automatiquement des Puits de Magma', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'magmaWell', cost: { credits: 200000, magma: 1000 }, unlockReq: { buildings: { magmaWell: 5 } }, interval: 5000 },
+                { id: 'autoVolcanicDrill', name: 'Auto-Volcanique', desc: 'Achète automatiquement des Foreuses Volcaniques', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'volcanicDrill', cost: { credits: 1000000, magma: 5000 }, unlockReq: { buildings: { volcanicDrill: 3 } }, interval: 6000 }
+            ],
+            nexus: [
+                { id: 'autoVoidRift', name: 'Auto-Vide', desc: 'Achète automatiquement des Failles du Vide', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'voidRift', cost: { credits: 500000, darkMatter: 2000 }, unlockReq: { buildings: { voidRift: 5 } }, interval: 5000 },
+                { id: 'autoDarkExtractor', name: 'Auto-Sombre', desc: 'Achète automatiquement des Extracteurs Sombres', icon: 'https://img.icons8.com/color/48/robot.png', buildingId: 'darkExtractor', cost: { credits: 2000000, darkMatter: 10000 }, unlockReq: { buildings: { darkExtractor: 3 } }, interval: 6000 }
+            ]
+        };
+
+        // Niveaux de prestige par planète
+        const planetPrestigeLevels = {
+            nova: [
+                { level: 1, name: 'Initié Stellaire', icon: '🌟', requirements: { totalPlasma: 100000, buildings: { solarCollector: 5 } }, bonuses: { globalMultiplier: 2, plasmaMultiplier: 2 } },
+                { level: 2, name: 'Maître Solaire', icon: '☀️', requirements: { totalPlasma: 10000000, buildings: { stellarForge: 5 } }, bonuses: { globalMultiplier: 3, plasmaMultiplier: 3, costReduction: 0.1 } },
+                { level: 3, name: 'Seigneur Nova', icon: '💫', requirements: { totalPlasma: 1000000000, buildings: { novaCore: 5 } }, bonuses: { globalMultiplier: 5, plasmaMultiplier: 5, costReduction: 0.2 } }
+            ],
+            cryo: [
+                { level: 1, name: 'Givreur', icon: '❄️', requirements: { totalCrystals: 200000, buildings: { frostExtractor: 5 } }, bonuses: { globalMultiplier: 2, crystalsMultiplier: 2 } },
+                { level: 2, name: 'Maître du Gel', icon: '🧊', requirements: { totalCrystals: 20000000, buildings: { cryoLab: 5 } }, bonuses: { globalMultiplier: 3, crystalsMultiplier: 3, costReduction: 0.1 } },
+                { level: 3, name: 'Empereur Glacial', icon: '💎', requirements: { totalCrystals: 2000000000, buildings: { iceCore: 5 } }, bonuses: { globalMultiplier: 5, crystalsMultiplier: 5, costReduction: 0.2 } }
+            ],
+            vulcan: [
+                { level: 1, name: 'Forgeur', icon: '🔥', requirements: { totalMagma: 500000, buildings: { volcanicDrill: 5 } }, bonuses: { globalMultiplier: 2, magmaMultiplier: 2 } },
+                { level: 2, name: 'Maître du Feu', icon: '🌋', requirements: { totalMagma: 50000000, buildings: { infernoForge: 5 } }, bonuses: { globalMultiplier: 3, magmaMultiplier: 3, costReduction: 0.1 } },
+                { level: 3, name: 'Titan Volcanique', icon: '⚒️', requirements: { totalMagma: 5000000000, buildings: { magmaCore: 5 } }, bonuses: { globalMultiplier: 5, magmaMultiplier: 5, costReduction: 0.2 } }
+            ],
+            nexus: [
+                { level: 1, name: 'Vagabond du Vide', icon: '🌑', requirements: { totalDarkMatter: 1000000, buildings: { darkExtractor: 5 } }, bonuses: { globalMultiplier: 3, darkMatterMultiplier: 3 } },
+                { level: 2, name: 'Maître des Ombres', icon: '🌌', requirements: { totalDarkMatter: 100000000, buildings: { dimensionGate: 5 } }, bonuses: { globalMultiplier: 5, darkMatterMultiplier: 5, costReduction: 0.2 } },
+                { level: 3, name: 'Divinité Omega', icon: '✨', requirements: { totalDarkMatter: 10000000000, buildings: { omegaCore: 5 } }, bonuses: { globalMultiplier: 10, darkMatterMultiplier: 10, costReduction: 0.3, rebirthBonus: 1 } }
+            ]
+        };
+
+        // Configuration du Rebirth
+        const rebirthLevels = [
+            {
+                level: 1,
+                name: 'Renaissance Stellaire',
+                icon: '🌟',
+                unlockedPlanet: 'nova',
+                requirements: { prestigeLevel: 5, totalOre: 1000000000000000 }, // Prestige 5 + 1Qa minerai
+                pointsGained: 1,
+                bonuses: { globalMultiplier: 1.5 },
+                description: 'Débloque Nova Prime et gagne x1.5 production globale permanente'
+            },
+            {
+                level: 2,
+                name: 'Éveil Glacial',
+                icon: '❄️',
+                unlockedPlanet: 'cryo',
+                requirements: { planetPrestige: { nova: 3 }, totalPlasma: 1000000000000 },
+                pointsGained: 2,
+                bonuses: { globalMultiplier: 2 },
+                description: 'Débloque Cryosia et gagne x2 production globale permanente'
+            },
+            {
+                level: 3,
+                name: 'Ascension Volcanique',
+                icon: '🌋',
+                unlockedPlanet: 'vulcan',
+                requirements: { planetPrestige: { cryo: 3 }, totalCrystals: 1000000000000 },
+                pointsGained: 3,
+                bonuses: { globalMultiplier: 3 },
+                description: 'Débloque Vulcanis et gagne x3 production globale permanente'
+            },
+            {
+                level: 4,
+                name: 'Transcendance Dimensionnelle',
+                icon: '🌌',
+                unlockedPlanet: 'nexus',
+                requirements: { planetPrestige: { vulcan: 3 }, totalMagma: 1000000000000 },
+                pointsGained: 5,
+                bonuses: { globalMultiplier: 5 },
+                description: 'Débloque Nexus Omega et gagne x5 production globale permanente'
+            },
+            {
+                level: 5,
+                name: 'Apothéose Cosmique',
+                icon: '✨',
+                unlockedPlanet: null,
+                requirements: { planetPrestige: { nexus: 3 }, totalDarkMatter: 1000000000000, allAchievements: 40 },
+                pointsGained: 10,
+                bonuses: { globalMultiplier: 10, offlineRate: 1, eventChance: 3 },
+                description: 'Bonus ultime: x10 production, 100% offline, x3 événements'
             }
         ];
 
@@ -1751,8 +2396,33 @@
             { id: 'prestige4', name: 'Seigneur des Étoiles', desc: 'Atteins le niveau de prestige 3', icon: 'https://img.icons8.com/color/48/sparkling.png', req: { prestigeLevel: 3 } },
             { id: 'prestige5', name: 'Empereur Cosmique', desc: 'Atteins le niveau de prestige 4', icon: 'https://img.icons8.com/color/48/crown.png', req: { prestigeLevel: 4 } },
             { id: 'prestige6', name: 'Divinité Astrale', desc: 'Atteins le niveau de prestige 5', icon: 'https://img.icons8.com/color/48/bright-moon.png', req: { prestigeLevel: 5 } },
-            { id: 'prestigeMaster', name: 'Maître du Prestige', desc: 'Effectue 5 prestiges au total', icon: 'https://img.icons8.com/color/48/pentagram.png', req: { prestige: 5 } },
-            { id: 'prestigeLegend', name: 'Légende Éternelle', desc: 'Effectue 10 prestiges au total', icon: 'https://img.icons8.com/color/48/galaxy.png', req: { prestige: 10 } }
+            { id: 'prestigeMaster', name: 'Maître du Prestige', desc: 'Effectue 5 prestiges au total', icon: 'https://img.icons8.com/color/48/pentagram-devil.png', req: { prestige: 5 } },
+            { id: 'prestigeLegend', name: 'Légende Éternelle', desc: 'Effectue 10 prestiges au total', icon: 'https://img.icons8.com/color/48/galaxy.png', req: { prestige: 10 } },
+
+            // Rebirth
+            { id: 'firstRebirth', name: 'Renaissance', desc: 'Effectue ton premier rebirth', icon: 'https://img.icons8.com/color/48/galaxy.png', req: { rebirth: 1 } },
+            { id: 'rebirth2', name: 'Voyageur Stellaire', desc: 'Atteins le rebirth niveau 2', icon: 'https://img.icons8.com/color/48/shooting-stars.png', req: { rebirthLevel: 2 } },
+            { id: 'rebirth3', name: 'Explorateur Galactique', desc: 'Atteins le rebirth niveau 3', icon: 'https://img.icons8.com/color/48/sparkling.png', req: { rebirthLevel: 3 } },
+            { id: 'rebirth4', name: 'Maître des Dimensions', desc: 'Atteins le rebirth niveau 4', icon: 'https://img.icons8.com/color/48/portal.png', req: { rebirthLevel: 4 } },
+            { id: 'rebirth5', name: 'Entité Cosmique', desc: 'Atteins le rebirth niveau 5', icon: 'https://img.icons8.com/color/48/bright-moon.png', req: { rebirthLevel: 5 } },
+            { id: 'rebirthMaster', name: 'Maître du Rebirth', desc: 'Effectue 5 rebirths au total', icon: 'https://img.icons8.com/color/48/pentagram.png', req: { rebirth: 5 } },
+
+            // Planètes
+            { id: 'novaUnlock', name: 'Bienvenue sur Nova', desc: 'Débloque Nova Prime', icon: 'https://img.icons8.com/color/48/star.png', req: { planet: 'nova' } },
+            { id: 'cryoUnlock', name: 'Froid Cosmique', desc: 'Débloque Cryosia', icon: 'https://img.icons8.com/color/48/winter.png', req: { planet: 'cryo' } },
+            { id: 'vulcanUnlock', name: 'Chaleur Infernale', desc: 'Débloque Vulcanis', icon: 'https://img.icons8.com/color/48/volcano.png', req: { planet: 'vulcan' } },
+            { id: 'nexusUnlock', name: 'Dimension Finale', desc: 'Débloque Nexus Omega', icon: 'https://img.icons8.com/color/48/black-hole.png', req: { planet: 'nexus' } },
+            { id: 'allPlanets', name: 'Conquérant Galactique', desc: 'Débloque toutes les planètes', icon: 'https://img.icons8.com/color/48/galaxy.png', req: { allPlanets: true } },
+
+            // Ressources spéciales
+            { id: 'plasmaCollector', name: 'Collecteur de Plasma', desc: 'Récolte 1 million de plasma', icon: 'https://img.icons8.com/color/48/fire-element.png', req: { plasma: 1000000 } },
+            { id: 'crystalHoarder', name: 'Thésauriseur de Cristaux', desc: 'Récolte 1 million de cristaux', icon: 'https://img.icons8.com/color/48/crystal.png', req: { crystals: 1000000 } },
+            { id: 'magmaLord', name: 'Seigneur du Magma', desc: 'Récolte 1 million de magma', icon: 'https://img.icons8.com/color/48/lava.png', req: { magma: 1000000 } },
+            { id: 'darkMatterMaster', name: 'Maître de la Matière Noire', desc: 'Récolte 1 million de matière noire', icon: 'https://img.icons8.com/color/48/black-hole.png', req: { darkMatter: 1000000 } },
+
+            // Points de Rebirth
+            { id: 'rebirthPoints5', name: 'Accumulateur', desc: 'Accumule 5 points de rebirth', icon: 'https://img.icons8.com/color/48/diamond.png', req: { rebirthPoints: 5 } },
+            { id: 'rebirthPoints20', name: 'Transcendant', desc: 'Accumule 20 points de rebirth', icon: 'https://img.icons8.com/color/48/crown.png', req: { rebirthPoints: 20 } }
         ];
 
         const automations = [
@@ -2004,13 +2674,14 @@
         function calculateProduction() {
             const production = { ore: 0, energy: 0, credits: 0, research: 0 };
             const prestigeBonus = getPrestigeBonus();
+            const rebirthBonus = getRebirthBonus();
             for (const building of buildings) {
                 const count = gameData.buildings[building.id] || 0;
                 if (count > 0) {
                     const multiplier = gameData.buildingMultipliers[building.id] || 1;
                     for (const [resource, amount] of Object.entries(building.production)) {
                         const eventMult = eventMultipliers[resource] || 1;
-                        production[resource] += amount * count * multiplier * gameData.multipliers[resource] * eventMult * prestigeBonus.globalMultiplier;
+                        production[resource] += amount * count * multiplier * gameData.multipliers[resource] * eventMult * prestigeBonus.globalMultiplier * rebirthBonus.globalMultiplier;
                     }
                 }
             }
@@ -2030,6 +2701,22 @@
             document.getElementById('research-rate').textContent = `+${formatNumber(production.research)}/sec`;
             document.getElementById('sell-btn').disabled = gameData.resources.ore < 10;
             document.getElementById('research-btn').disabled = gameData.resources.energy < 20;
+
+            // Mise à jour des ressources spéciales
+            const currentPlanet = planets[gameData.rebirth.currentPlanet];
+            if (currentPlanet && currentPlanet.specialResource) {
+                const specialId = currentPlanet.specialResource.id;
+                const valueEl = document.getElementById('special-resource-value');
+                if (valueEl) {
+                    valueEl.textContent = formatNumber(gameData.rebirth.specialResources[specialId] || 0);
+                }
+            }
+
+            // Mise à jour des points de rebirth
+            const rebirthPointsEl = document.getElementById('rebirth-points-value');
+            if (rebirthPointsEl) {
+                rebirthPointsEl.textContent = gameData.rebirth.points;
+            }
         }
 
         function renderBuildings() {
@@ -2048,7 +2735,7 @@
             selector.querySelectorAll('.buy-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     gameData.buyAmount = parseInt(btn.dataset.amount);
-                    renderBuildings();
+                    triggerFullRender();
                 });
             });
             panel.appendChild(selector);
@@ -2073,6 +2760,7 @@
                 }
                 const card = document.createElement('div');
                 card.className = `building-card ${!unlocked ? 'locked' : ''} ${affordable && unlocked ? 'affordable' : ''}`;
+                card.dataset.buildingId = building.id;
                 let costHTML = '';
                 for (const [resource, amount] of Object.entries(cost)) {
                     const hasEnough = gameData.resources[resource] >= amount;
@@ -2085,10 +2773,11 @@
                 let totalProdHTML = '';
                 if (count > 0) {
                     const buildingMult = gameData.buildingMultipliers[building.id] || 1;
+                    const prestigeBonus = getPrestigeBonus();
                     let prodParts = [];
                     for (const [resource, baseAmount] of Object.entries(building.production)) {
                         const eventMult = eventMultipliers[resource] || 1;
-                        const totalProd = baseAmount * count * buildingMult * gameData.multipliers[resource] * eventMult;
+                        const totalProd = baseAmount * count * buildingMult * gameData.multipliers[resource] * eventMult * prestigeBonus.globalMultiplier;
                         prodParts.push(`+${formatNumber(totalProd)} ${resource}/s`);
                     }
                     totalProdHTML = `<div style="font-size: 0.7em; color: var(--accent-cyan); margin-top: 4px;">Total: ${prodParts.join(', ')}</div>`;
@@ -2140,6 +2829,7 @@
                 }
                 const card = document.createElement('div');
                 card.className = `upgrade-card ${!unlocked ? 'locked' : ''} ${purchased ? 'purchased' : ''} ${affordable && unlocked && !purchased ? 'affordable' : ''}`;
+                card.dataset.upgradeId = upgrade.id;
                 let costHTML = '';
                 if (!purchased) {
                     for (const [resource, amount] of Object.entries(upgrade.cost)) {
@@ -2338,6 +3028,7 @@
 
                 const card = document.createElement('div');
                 card.className = `automation-card ${!unlocked ? 'locked' : ''} ${purchased ? 'purchased' : ''} ${affordable && unlocked && !purchased ? 'affordable' : ''}`;
+                card.dataset.automationId = automation.id;
 
                 let costHTML = '';
                 if (!purchased) {
@@ -2385,14 +3076,14 @@
                 gameData.automationEnabled[automation.id] = true;
                 gameData.automationTimers[automation.id] = Date.now();
                 updateResourceDisplay();
-                renderAutomation();
+                triggerFullRender();
                 showNotification(`${automation.name} activé !`);
             }
         }
 
         function toggleAutomation(automationId) {
             gameData.automationEnabled[automationId] = !gameData.automationEnabled[automationId];
-            renderAutomation();
+            triggerFullRender();
         }
 
         // ===== PRESTIGE SYSTEM =====
@@ -2713,6 +3404,449 @@
             }
         }
 
+        // ===== REBIRTH SYSTEM =====
+        function getRebirthBonus() {
+            const level = gameData.rebirth.level;
+            const points = gameData.rebirth.points;
+
+            let bonus = {
+                globalMultiplier: 1,
+                offlineRate: 0,
+                eventChance: 1
+            };
+
+            // Bonus cumulatifs des niveaux de rebirth
+            for (let i = 0; i < level && i < rebirthLevels.length; i++) {
+                const rb = rebirthLevels[i];
+                if (rb.bonuses.globalMultiplier) {
+                    bonus.globalMultiplier *= rb.bonuses.globalMultiplier;
+                }
+                if (rb.bonuses.offlineRate) {
+                    bonus.offlineRate = rb.bonuses.offlineRate;
+                }
+                if (rb.bonuses.eventChance) {
+                    bonus.eventChance = rb.bonuses.eventChance;
+                }
+            }
+
+            // Bonus des points de rebirth (chaque point = +10% production)
+            bonus.globalMultiplier *= (1 + points * 0.1);
+
+            return bonus;
+        }
+
+        function getCurrentPlanet() {
+            return planets[gameData.rebirth.currentPlanet] || planets.terra;
+        }
+
+        function isPlanetUnlocked(planetId) {
+            return gameData.rebirth.unlockedPlanets.includes(planetId);
+        }
+
+        function getNextRebirthLevel() {
+            const currentLevel = gameData.rebirth.level;
+            if (currentLevel >= rebirthLevels.length) return null;
+            return rebirthLevels[currentLevel];
+        }
+
+        function checkRebirthRequirement(req) {
+            const result = { met: true, details: [] };
+
+            // Prestige level sur Terra
+            if (req.prestigeLevel) {
+                const currentPrestige = gameData.prestige.level;
+                const met = currentPrestige >= req.prestigeLevel;
+                result.details.push({
+                    text: `Prestige Terra: ${currentPrestige} / ${req.prestigeLevel}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            // Total ore
+            if (req.totalOre) {
+                const total = gameData.prestige.lifetimeOre + gameData.totalEarned.ore;
+                const met = total >= req.totalOre;
+                result.details.push({
+                    text: `Minerai total: ${formatNumber(total)} / ${formatNumber(req.totalOre)}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            // Planet prestige
+            if (req.planetPrestige) {
+                for (const [planetId, level] of Object.entries(req.planetPrestige)) {
+                    const planetData = gameData.rebirth.planetData[planetId];
+                    const currentLevel = planetData ? planetData.prestige.level : 0;
+                    const planet = planets[planetId];
+                    const met = currentLevel >= level;
+                    result.details.push({
+                        text: `Prestige ${planet.name}: ${currentLevel} / ${level}`,
+                        met: met
+                    });
+                    if (!met) result.met = false;
+                }
+            }
+
+            // Special resources
+            if (req.totalPlasma) {
+                const total = gameData.rebirth.totalSpecialResources.plasma;
+                const met = total >= req.totalPlasma;
+                result.details.push({
+                    text: `Plasma total: ${formatNumber(total)} / ${formatNumber(req.totalPlasma)}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            if (req.totalCrystals) {
+                const total = gameData.rebirth.totalSpecialResources.crystals;
+                const met = total >= req.totalCrystals;
+                result.details.push({
+                    text: `Cristaux total: ${formatNumber(total)} / ${formatNumber(req.totalCrystals)}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            if (req.totalMagma) {
+                const total = gameData.rebirth.totalSpecialResources.magma;
+                const met = total >= req.totalMagma;
+                result.details.push({
+                    text: `Magma total: ${formatNumber(total)} / ${formatNumber(req.totalMagma)}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            if (req.totalDarkMatter) {
+                const total = gameData.rebirth.totalSpecialResources.darkMatter;
+                const met = total >= req.totalDarkMatter;
+                result.details.push({
+                    text: `Matière noire total: ${formatNumber(total)} / ${formatNumber(req.totalDarkMatter)}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            // All achievements
+            if (req.allAchievements) {
+                const count = Object.values(gameData.achievements).filter(v => v).length;
+                const met = count >= req.allAchievements;
+                result.details.push({
+                    text: `Succès: ${count} / ${req.allAchievements}`,
+                    met: met
+                });
+                if (!met) result.met = false;
+            }
+
+            return result;
+        }
+
+        function canRebirth() {
+            const next = getNextRebirthLevel();
+            if (!next) return false;
+            return checkRebirthRequirement(next.requirements).met;
+        }
+
+        function performRebirth() {
+            if (!canRebirth()) return;
+
+            const next = getNextRebirthLevel();
+
+            // Gagner les points de rebirth
+            gameData.rebirth.points += next.pointsGained;
+            gameData.rebirth.level++;
+            gameData.rebirth.totalRebirths++;
+
+            // Débloquer la nouvelle planète
+            if (next.unlockedPlanet && !gameData.rebirth.unlockedPlanets.includes(next.unlockedPlanet)) {
+                gameData.rebirth.unlockedPlanets.push(next.unlockedPlanet);
+            }
+
+            // Reset complet de toutes les planètes
+            gameData.resources = { ore: 0, energy: 0, credits: 0, research: 0 };
+            gameData.totalEarned = { ore: 0, energy: 0, credits: 0, research: 0 };
+            gameData.buildings = {};
+            gameData.upgrades = {};
+            gameData.multipliers = { ore: 1, energy: 1, credits: 1, research: 1 };
+            gameData.buildingMultipliers = {};
+            gameData.automations = {};
+            gameData.automationEnabled = {};
+            gameData.automationTimers = {};
+            gameData.stats.totalSpent = { ore: 0, energy: 0, credits: 0, research: 0 };
+
+            // Reset du prestige
+            gameData.prestige.level = 0;
+            gameData.prestige.lifetimeOre = 0;
+            gameData.prestige.lifetimeEnergy = 0;
+            gameData.prestige.lifetimeCredits = 0;
+            gameData.prestige.lifetimeResearch = 0;
+
+            // Reset des ressources spéciales
+            gameData.rebirth.specialResources = { plasma: 0, crystals: 0, magma: 0, darkMatter: 0 };
+
+            // Reset des données par planète
+            for (const planetId of Object.keys(gameData.rebirth.planetData)) {
+                gameData.rebirth.planetData[planetId] = {
+                    prestige: { level: 0, totalPrestiges: 0 },
+                    buildings: {},
+                    upgrades: {},
+                    automations: {}
+                };
+            }
+
+            // Retour sur Terra
+            gameData.rebirth.currentPlanet = 'terra';
+
+            saveGame();
+            showRebirthModal(next);
+
+            // Rafraîchir l'interface
+            updateResourceDisplay();
+            renderPlanetSelector();
+            triggerFullRender();
+            renderPrestige();
+            renderRebirth();
+            renderAchievements();
+            renderStats();
+            checkAchievements();
+        }
+
+        function showRebirthModal(rebirthData) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+
+            overlay.innerHTML = `
+                <div class="modal prestige-modal" style="border-color: #9933ff;">
+                    <h2 style="background: linear-gradient(135deg, #9933ff, #ff3366); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">REBIRTH !</h2>
+                    <div style="font-size: 3em; margin: 15px 0;">${rebirthData.icon}</div>
+                    <p style="font-size: 1.2em; margin: 15px 0;">Tu as atteint</p>
+                    <p style="font-size: 1.3em; color: #ff3366; font-family: 'Orbitron', sans-serif; font-weight: 700;">
+                        ${rebirthData.name}
+                    </p>
+                    <div class="modal-gains" style="margin: 20px 0; border-color: #9933ff;">
+                        <p style="color: var(--accent-green); font-size: 0.9em;">${rebirthData.description}</p>
+                        <p style="color: #ff3366; margin-top: 10px;">+${rebirthData.pointsGained} Points de Rebirth</p>
+                    </div>
+                    ${rebirthData.unlockedPlanet ? `
+                    <div class="rebirth-unlock">
+                        <div class="rebirth-unlock-title">Nouvelle planète débloquée !</div>
+                        <div class="rebirth-unlock-planet">${planets[rebirthData.unlockedPlanet].icon}</div>
+                        <div class="rebirth-unlock-name">${planets[rebirthData.unlockedPlanet].name}</div>
+                    </div>
+                    ` : ''}
+                    <p style="font-size: 0.8em; color: var(--text-secondary);">
+                        Total points : ${gameData.rebirth.points} | Rebirths : ${gameData.rebirth.totalRebirths}
+                    </p>
+                    <button class="modal-btn" style="background: #9933ff;" onclick="this.closest('.modal-overlay').remove()">Continuer</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function changePlanet(planetId) {
+            if (!isPlanetUnlocked(planetId)) return;
+            if (gameData.rebirth.currentPlanet === planetId) return;
+
+            // Sauvegarder les données de la planète actuelle (si on veut garder la progression par planète)
+            // Pour simplifier, on change juste de planète active
+            gameData.rebirth.currentPlanet = planetId;
+
+            // Mettre à jour l'interface
+            updatePlanetTheme();
+            renderPlanetSelector();
+            triggerFullRender();
+            updateResourceDisplay();
+        }
+
+        function updatePlanetTheme() {
+            const planet = getCurrentPlanet();
+            const title = document.getElementById('game-title');
+            if (title) {
+                title.textContent = planet.name.toUpperCase();
+            }
+
+            // Mettre à jour la ressource spéciale
+            const specialCard = document.getElementById('special-resource-card');
+            if (planet.specialResource) {
+                specialCard.style.display = 'block';
+                document.getElementById('special-resource-icon').src = planet.specialResource.icon;
+                document.getElementById('special-resource-name').textContent = planet.specialResource.name;
+                const valueEl = document.getElementById('special-resource-value');
+                valueEl.className = 'resource-value ' + planet.specialResource.id;
+                valueEl.style.color = planet.specialResource.color;
+            } else {
+                specialCard.style.display = 'none';
+            }
+
+            // Afficher les points de rebirth si on en a
+            const rebirthCard = document.getElementById('rebirth-points-card');
+            if (gameData.rebirth.points > 0 || gameData.rebirth.level > 0) {
+                rebirthCard.style.display = 'block';
+                document.getElementById('rebirth-points-value').textContent = gameData.rebirth.points;
+                const bonus = getRebirthBonus();
+                document.getElementById('rebirth-multiplier-display').textContent = `x${bonus.globalMultiplier.toFixed(1)} production`;
+            }
+        }
+
+        function renderPlanetSelector() {
+            const selector = document.getElementById('planet-selector');
+            if (!selector) return;
+
+            let html = '';
+            for (const [id, planet] of Object.entries(planets)) {
+                const unlocked = isPlanetUnlocked(id);
+                const active = gameData.rebirth.currentPlanet === id;
+                html += `
+                    <div class="planet-btn ${active ? 'active' : ''} ${!unlocked ? 'locked' : ''}"
+                         onclick="${unlocked ? `changePlanet('${id}')` : ''}"
+                         title="${unlocked ? planet.name : 'Verrouillé'}">
+                        <span class="planet-icon">${unlocked ? planet.icon : '🔒'}</span>
+                        <span class="planet-name">${planet.name.split(' ')[0]}</span>
+                    </div>
+                `;
+            }
+            selector.innerHTML = html;
+        }
+
+        function renderRebirth() {
+            const panel = document.getElementById('rebirth-panel');
+            const currentLevel = gameData.rebirth.level;
+            const nextLevel = getNextRebirthLevel();
+            const bonus = getRebirthBonus();
+
+            let requirementsHTML = '';
+            if (nextLevel) {
+                const reqCheck = checkRebirthRequirement(nextLevel.requirements);
+                requirementsHTML = reqCheck.details.map(d => `
+                    <div class="prestige-req">
+                        <span class="prestige-req-icon">${d.met ? '✅' : '❌'}</span>
+                        <span class="prestige-req-text">${d.text}</span>
+                        <span class="prestige-req-status ${d.met ? 'complete' : 'incomplete'}">${d.met ? 'OK' : 'En cours'}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Galaxy map
+            let galaxyHTML = '<div class="galaxy-map"><div class="galaxy-line"></div>';
+            for (const [id, planet] of Object.entries(planets)) {
+                const unlocked = isPlanetUnlocked(id);
+                const active = gameData.rebirth.currentPlanet === id;
+                galaxyHTML += `
+                    <div class="galaxy-planet ${active ? 'active' : ''} ${unlocked ? 'unlocked' : 'locked'}"
+                         onclick="${unlocked ? `changePlanet('${id}')` : ''}"
+                         title="${planet.name}">
+                        ${unlocked ? planet.icon : '🔒'}
+                    </div>
+                `;
+            }
+            galaxyHTML += '</div>';
+
+            panel.innerHTML = `
+                <div class="rebirth-header">
+                    <div class="rebirth-level">🌌 Rebirth Niveau ${currentLevel}</div>
+                    <div class="rebirth-points">${gameData.rebirth.points} Points de Rebirth</div>
+                    <div class="rebirth-multiplier">x${bonus.globalMultiplier.toFixed(1)} Production Globale</div>
+                </div>
+
+                ${galaxyHTML}
+
+                <div class="prestige-bonuses" style="border-color: #9933ff;">
+                    <div class="prestige-bonuses-title" style="color: #9933ff;">Bonus de Rebirth Actifs</div>
+                    <div class="prestige-bonus-row">
+                        <span class="prestige-bonus-label">Multiplicateur global</span>
+                        <span class="prestige-bonus-value">x${bonus.globalMultiplier.toFixed(1)}</span>
+                    </div>
+                    <div class="prestige-bonus-row">
+                        <span class="prestige-bonus-label">Bonus par point</span>
+                        <span class="prestige-bonus-value">+${gameData.rebirth.points * 10}%</span>
+                    </div>
+                    <div class="prestige-bonus-row">
+                        <span class="prestige-bonus-label">Planètes débloquées</span>
+                        <span class="prestige-bonus-value">${gameData.rebirth.unlockedPlanets.length} / ${Object.keys(planets).length}</span>
+                    </div>
+                </div>
+
+                ${nextLevel ? `
+                <div class="prestige-next" style="border-color: #9933ff;">
+                    <div class="prestige-next-title" style="color: #9933ff;">${nextLevel.icon} Prochain : ${nextLevel.name}</div>
+                    <p style="font-size: 0.8em; color: var(--text-secondary); margin-bottom: 10px;">${nextLevel.description}</p>
+                    ${requirementsHTML}
+                </div>
+
+                <button class="rebirth-button" ${canRebirth() ? '' : 'disabled'} onclick="confirmRebirth()">
+                    🌌 Rebirth
+                </button>
+                <div class="rebirth-warning">
+                    ⚠️ Le rebirth réinitialise TOUT : ressources, bâtiments, améliorations, automatisations, ET le prestige !<br>
+                    Tu gardes uniquement tes succès et gagnes des bonus permanents.
+                </div>
+                ` : `
+                <div class="prestige-next" style="border-color: var(--accent-green);">
+                    <div class="prestige-next-title" style="color: var(--accent-green);">✨ Niveau Maximum Atteint !</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85em; padding: 10px 0;">
+                        Tu as atteint l'apothéose cosmique. Tu maîtrises toutes les dimensions !
+                    </p>
+                </div>
+                `}
+
+                <div class="stats-section" style="margin-top: 20px;">
+                    <div class="stats-section-title" style="color: #9933ff;">Statistiques Rebirth</div>
+                    <div class="stat-row">
+                        <span class="stat-label">Rebirths totaux</span>
+                        <span class="stat-value" style="color: #9933ff;">${gameData.rebirth.totalRebirths}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Points de rebirth</span>
+                        <span class="stat-value" style="color: #ff3366;">${gameData.rebirth.points}</span>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stats-section-title">Planètes</div>
+                    ${Object.entries(planets).map(([id, planet]) => {
+                        const unlocked = isPlanetUnlocked(id);
+                        const planetData = gameData.rebirth.planetData[id];
+                        return `
+                        <div class="planet-card ${unlocked ? 'unlocked' : 'locked'} ${gameData.rebirth.currentPlanet === id ? 'current' : ''}">
+                            <div class="planet-card-header">
+                                <span class="planet-card-icon">${planet.icon}</span>
+                                <div class="planet-card-info">
+                                    <div class="planet-card-name">${planet.name}</div>
+                                    <div class="planet-card-resource">${planet.specialResource ? planet.specialResource.name : 'Ressources de base'}</div>
+                                </div>
+                                <span class="planet-card-status">${unlocked ? '✅' : '🔒'}</span>
+                            </div>
+                            <div class="planet-card-desc">${planet.description}</div>
+                            ${unlocked ? `
+                            <div class="planet-card-stats">
+                                <div class="planet-stat">
+                                    <span class="planet-stat-label">Prestige</span>
+                                    <span class="planet-stat-value">${id === 'terra' ? gameData.prestige.level : (planetData?.prestige?.level || 0)}</span>
+                                </div>
+                                <div class="planet-stat">
+                                    <span class="planet-stat-label">Thème</span>
+                                    <span class="planet-stat-value">${planet.theme}</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function confirmRebirth() {
+            if (!canRebirth()) return;
+            const next = getNextRebirthLevel();
+            if (confirm(`Es-tu sûr de vouloir effectuer un REBIRTH vers "${next.name}" ?\n\n⚠️ ATTENTION : TOUT sera réinitialisé !\n- Toutes les ressources\n- Tous les bâtiments\n- Toutes les améliorations\n- Toutes les automatisations\n- Tout le prestige\n\n✅ Tu garderas :\n- Tes succès\n- Tes points de rebirth (+${next.pointsGained})\n- Les planètes débloquées\n\n${next.unlockedPlanet ? `🌍 Nouvelle planète : ${planets[next.unlockedPlanet].name}` : ''}`)) {
+                performRebirth();
+            }
+        }
+
         // ===== ACTIONS =====
         function mine() {
             gameData.stats.clicks++;
@@ -2758,8 +3892,7 @@
                 spendResources(cost);
                 gameData.buildings[building.id] = (gameData.buildings[building.id] || 0) + amount;
                 updateResourceDisplay();
-                renderBuildings();
-                renderUpgrades();
+                triggerFullRender();
                 checkAchievements();
             }
         }
@@ -2779,7 +3912,7 @@
                     }
                 }
                 updateResourceDisplay();
-                renderUpgrades();
+                triggerFullRender();
                 showNotification(`${upgrade.name} acheté !`);
             }
         }
@@ -2801,6 +3934,14 @@
                         if ((gameData.prestige.totalPrestiges || 0) < value) unlocked = false;
                     } else if (key === 'prestigeLevel') {
                         if ((gameData.prestige.level || 0) < value) unlocked = false;
+                    } else if (key === 'rebirth') {
+                        if ((gameData.rebirth.totalRebirths || 0) < value) unlocked = false;
+                    } else if (key === 'rebirthLevel') {
+                        if ((gameData.rebirth.level || 0) < value) unlocked = false;
+                    } else if (key === 'planets') {
+                        if ((gameData.rebirth.unlockedPlanets?.length || 1) < value) unlocked = false;
+                    } else if (key === 'plasma' || key === 'crystals' || key === 'magma' || key === 'darkMatter') {
+                        if ((gameData.rebirth.totalSpecialResources[key] || 0) < value) unlocked = false;
                     } else {
                         if ((gameData.totalEarned[key] || 0) < value) unlocked = false;
                     }
@@ -2844,6 +3985,8 @@
 
         // ===== GAME LOOP =====
         let tickCount = 0;
+        let needsFullRender = true; // Pour le premier rendu ou après achat
+
         function gameLoop() {
             const production = calculateProduction();
             for (const [resource, amount] of Object.entries(production)) {
@@ -2855,13 +3998,140 @@
             tickCount++;
             if (tickCount >= 5) {
                 tickCount = 0;
-                renderBuildings();
-                renderUpgrades();
-                renderAutomation();
-                renderPrestige();
-                renderStats();
+                if (needsFullRender) {
+                    // Rendu complet seulement quand nécessaire
+                    renderBuildings();
+                    renderUpgrades();
+                    renderAutomation();
+                    renderPrestige();
+                    renderRebirth();
+                    renderStats();
+                    needsFullRender = false;
+                } else {
+                    // Mise à jour légère sans reconstruire le HTML
+                    updateBuildingsDisplay();
+                    updateUpgradesDisplay();
+                    updateAutomationDisplay();
+                }
             }
             checkAchievements();
+        }
+
+        // Mise à jour légère des bâtiments (sans reconstruire le HTML)
+        function updateBuildingsDisplay() {
+            const cards = document.querySelectorAll('#buildings-panel .building-card');
+            cards.forEach(card => {
+                const buildingId = card.dataset.buildingId;
+                if (!buildingId) return;
+
+                const building = buildings.find(b => b.id === buildingId);
+                if (!building) return;
+
+                const count = gameData.buildings[building.id] || 0;
+                let buyQty = gameData.buyAmount;
+                if (buyQty === -1) buyQty = getMaxAffordable(building);
+                buyQty = Math.max(1, buyQty);
+
+                const cost = getBuildingCost(building, buyQty);
+                const affordable = canAfford(cost);
+                const unlocked = checkUnlock(building.unlockReq);
+
+                // Mettre à jour les classes
+                card.classList.toggle('affordable', affordable && unlocked);
+                card.classList.toggle('locked', !unlocked);
+
+                // Mettre à jour le compteur
+                const countEl = card.querySelector('.building-count');
+                if (countEl) countEl.textContent = count;
+
+                // Mettre à jour les coûts
+                const costItems = card.querySelectorAll('.cost-item');
+                let i = 0;
+                for (const [resource, amount] of Object.entries(cost)) {
+                    if (costItems[i]) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costItems[i].textContent = `${formatNumber(amount)} ${resource}`;
+                        costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
+                    }
+                    i++;
+                }
+            });
+        }
+
+        // Mise à jour légère des améliorations
+        function updateUpgradesDisplay() {
+            const cards = document.querySelectorAll('#upgrades-panel .upgrade-card');
+            cards.forEach(card => {
+                const upgradeId = card.dataset.upgradeId;
+                if (!upgradeId) return;
+
+                const upgrade = upgrades.find(u => u.id === upgradeId);
+                if (!upgrade) return;
+
+                const purchased = gameData.upgrades[upgrade.id];
+                if (purchased) return; // Déjà acheté, pas de mise à jour nécessaire
+
+                const affordable = canAfford(upgrade.cost);
+                const unlocked = checkUnlock(upgrade.unlockReq);
+
+                card.classList.toggle('affordable', affordable && unlocked && !purchased);
+                card.classList.toggle('locked', !unlocked);
+
+                const costItems = card.querySelectorAll('.cost-item');
+                let i = 0;
+                for (const [resource, amount] of Object.entries(upgrade.cost)) {
+                    if (costItems[i]) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
+                    }
+                    i++;
+                }
+            });
+        }
+
+        // Mise à jour légère des automatisations
+        function updateAutomationDisplay() {
+            const cards = document.querySelectorAll('#automation-panel .automation-card');
+            cards.forEach(card => {
+                const automationId = card.dataset.automationId;
+                if (!automationId) return;
+
+                const automation = automations.find(a => a.id === automationId);
+                if (!automation) return;
+
+                const purchased = gameData.automations[automation.id];
+                if (purchased) {
+                    // Mettre à jour le compteur de bâtiments
+                    const statusEl = card.querySelector('.automation-status');
+                    if (statusEl) {
+                        const buildingCount = gameData.buildings[automation.buildingId] || 0;
+                        const building = buildings.find(b => b.id === automation.buildingId);
+                        statusEl.textContent = `${building.name} : ${buildingCount} (toutes les ${automation.interval / 1000}s)`;
+                    }
+                    return;
+                }
+
+                const affordable = canAfford(automation.cost);
+                const unlocked = checkUnlock(automation.unlockReq);
+
+                card.classList.toggle('affordable', affordable && unlocked && !purchased);
+                card.classList.toggle('locked', !unlocked);
+
+                const costItems = card.querySelectorAll('.cost-item');
+                let i = 0;
+                for (const [resource, amount] of Object.entries(automation.cost)) {
+                    if (costItems[i]) {
+                        const hasEnough = gameData.resources[resource] >= amount;
+                        costItems[i].className = `cost-item ${hasEnough ? 'affordable' : 'expensive'}`;
+                    }
+                    i++;
+                }
+            });
+        }
+
+        // Déclencher un rendu complet
+        function triggerFullRender() {
+            needsFullRender = true;
         }
 
         // ===== SAVE / LOAD =====
@@ -2940,6 +4210,55 @@
                     lifetimeCredits: 0,
                     lifetimeResearch: 0
                 };
+            }
+
+            // ---- Rebirth compatibility ----
+            if (!gameData.rebirth) {
+                gameData.rebirth = {
+                    level: 0,
+                    totalRebirths: 0,
+                    points: 0,
+                    currentPlanet: 'terra',
+                    unlockedPlanets: ['terra'],
+                    specialResources: {
+                        plasma: 0,
+                        crystals: 0,
+                        magma: 0,
+                        darkMatter: 0
+                    },
+                    totalSpecialResources: {
+                        plasma: 0,
+                        crystals: 0,
+                        magma: 0,
+                        darkMatter: 0
+                    },
+                    planetData: {
+                        terra: { prestigeLevel: 0, totalPrestiges: 0 },
+                        nova: { prestigeLevel: 0, totalPrestiges: 0 },
+                        cryo: { prestigeLevel: 0, totalPrestiges: 0 },
+                        vulcan: { prestigeLevel: 0, totalPrestiges: 0 },
+                        nexus: { prestigeLevel: 0, totalPrestiges: 0 }
+                    }
+                };
+            }
+            // Ensure rebirth sub-objects exist
+            if (!gameData.rebirth.specialResources) {
+                gameData.rebirth.specialResources = { plasma: 0, crystals: 0, magma: 0, darkMatter: 0 };
+            }
+            if (!gameData.rebirth.totalSpecialResources) {
+                gameData.rebirth.totalSpecialResources = { plasma: 0, crystals: 0, magma: 0, darkMatter: 0 };
+            }
+            if (!gameData.rebirth.planetData) {
+                gameData.rebirth.planetData = {
+                    terra: { prestigeLevel: 0, totalPrestiges: 0 },
+                    nova: { prestigeLevel: 0, totalPrestiges: 0 },
+                    cryo: { prestigeLevel: 0, totalPrestiges: 0 },
+                    vulcan: { prestigeLevel: 0, totalPrestiges: 0 },
+                    nexus: { prestigeLevel: 0, totalPrestiges: 0 }
+                };
+            }
+            if (!gameData.rebirth.unlockedPlanets) {
+                gameData.rebirth.unlockedPlanets = ['terra'];
             }
 
             // ---- OFFLINE PROGRESS ----
@@ -3155,6 +4474,9 @@
             renderPrestige();
             renderAchievements();
             renderStats();
+            renderRebirth();
+            renderPlanetSelector();
+            updatePlanetTheme();
             setInterval(gameLoop, 100);
             setInterval(saveGame, 30000);
             window.addEventListener('beforeunload', saveGame);
