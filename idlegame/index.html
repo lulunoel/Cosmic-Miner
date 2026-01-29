@@ -2067,7 +2067,7 @@
             nova: [
                 { id: 'plasmaExtractor', name: 'Extracteur de Plasma', desc: '+5 plasma/sec', icon: 'https://img.icons8.com/color/48/fire-element.png', baseCost: { ore: 50000, energy: 20000 }, production: { plasma: 5 }, unlockReq: null },
                 { id: 'solarCollector', name: 'Collecteur Solaire', desc: '+25 plasma/sec', icon: 'https://img.icons8.com/color/48/sun.png', baseCost: { ore: 500000, plasma: 100 }, production: { plasma: 25 }, unlockReq: { buildings: { plasmaExtractor: 5 } } },
-                { id: 'stellarForge', name: 'Forge Stellaire', desc: '+100 plasma/sec, +50 énergie/sec', icon: 'https://img.icons8.com/color/48/forge.png', baseCost: { ore: 5000000, plasma: 1000, credits: 100000 }, production: { plasma: 100, energy: 50 }, unlockReq: { buildings: { solarCollector: 5 } } },
+                { id: 'stellarForge', name: 'Forge Stellaire', desc: '+100 plasma/sec, +50 énergie/sec', icon: 'https://img.icons8.com/color/48/hammer-and-anvil.png', baseCost: { ore: 5000000, plasma: 1000, credits: 100000 }, production: { plasma: 100, energy: 50 }, unlockReq: { buildings: { solarCollector: 5 } } },
                 { id: 'novaCore', name: 'Cœur de Nova', desc: '+500 plasma/sec, +200 tous/sec', icon: 'https://img.icons8.com/color/48/bright-moon.png', baseCost: { ore: 100000000, plasma: 50000, research: 10000 }, production: { plasma: 500, ore: 200, energy: 200, credits: 200 }, unlockReq: { buildings: { stellarForge: 3 } } }
             ],
             cryo: [
@@ -2079,14 +2079,14 @@
             vulcan: [
                 { id: 'magmaWell', name: 'Puits de Magma', desc: '+5 magma/sec', icon: 'https://img.icons8.com/color/48/hot.png', baseCost: { ore: 500000, energy: 200000 }, production: { magma: 5 }, unlockReq: null },
                 { id: 'volcanicDrill', name: 'Foreuse Volcanique', desc: '+25 magma/sec', icon: 'https://img.icons8.com/color/48/drill.png', baseCost: { ore: 5000000, magma: 500 }, production: { magma: 25 }, unlockReq: { buildings: { magmaWell: 5 } } },
-                { id: 'infernoForge', name: 'Forge Infernale', desc: '+100 magma/sec, +100 minerai/sec', icon: 'https://img.icons8.com/color/48/anvil.png', baseCost: { ore: 50000000, magma: 5000, credits: 500000 }, production: { magma: 100, ore: 100 }, unlockReq: { buildings: { volcanicDrill: 5 } } },
+                { id: 'infernoForge', name: 'Forge Infernale', desc: '+100 magma/sec, +100 minerai/sec', icon: 'https://img.icons8.com/color/48/hammer-and-anvil.png', baseCost: { ore: 50000000, magma: 5000, credits: 500000 }, production: { magma: 100, ore: 100 }, unlockReq: { buildings: { volcanicDrill: 5 } } },
                 { id: 'magmaCore', name: 'Cœur de Magma', desc: '+500 magma/sec, +500 tous/sec', icon: 'https://img.icons8.com/color/48/volcano.png', baseCost: { ore: 1000000000, magma: 200000, research: 50000 }, production: { magma: 500, ore: 500, energy: 500, credits: 500 }, unlockReq: { buildings: { infernoForge: 3 } } }
             ],
             nexus: [
                 { id: 'voidRift', name: 'Faille du Vide', desc: '+5 matière noire/sec', icon: 'https://img.icons8.com/color/48/black-hole.png', baseCost: { ore: 1000000, energy: 500000 }, production: { darkMatter: 5 }, unlockReq: null },
                 { id: 'darkExtractor', name: 'Extracteur Sombre', desc: '+25 matière noire/sec', icon: 'https://img.icons8.com/color/48/galaxy.png', baseCost: { ore: 10000000, darkMatter: 1000 }, production: { darkMatter: 25 }, unlockReq: { buildings: { voidRift: 5 } } },
                 { id: 'dimensionGate', name: 'Porte Dimensionnelle', desc: '+100 matière noire/sec, x2 production', icon: 'https://img.icons8.com/color/48/portal.png', baseCost: { ore: 100000000, darkMatter: 10000, research: 100000 }, production: { darkMatter: 100 }, unlockReq: { buildings: { darkExtractor: 5 } }, special: { globalMultiplier: 2 } },
-                { id: 'omegaCore', name: 'Cœur Omega', desc: '+1000 matière noire/sec, +1000 tous/sec', icon: 'https://img.icons8.com/color/48/pentagram.png', baseCost: { ore: 10000000000, darkMatter: 500000, credits: 10000000 }, production: { darkMatter: 1000, ore: 1000, energy: 1000, credits: 1000, research: 100 }, unlockReq: { buildings: { dimensionGate: 3 } } }
+                { id: 'omegaCore', name: 'Cœur Omega', desc: '+1000 matière noire/sec, +1000 tous/sec', icon: 'https://img.icons8.com/color/48/pentagram-devil.png', baseCost: { ore: 10000000000, darkMatter: 500000, credits: 10000000 }, production: { darkMatter: 1000, ore: 1000, energy: 1000, credits: 1000, research: 100 }, unlockReq: { buildings: { dimensionGate: 3 } } }
             ]
         };
 
@@ -2110,7 +2110,7 @@
             nexus: [
                 { id: 'voidEnergy', name: 'Énergie du Vide', desc: 'Production matière noire x3', icon: 'https://img.icons8.com/color/48/black-hole.png', cost: { credits: 1000000, darkMatter: 5000 }, unlockReq: { darkMatter: 1000 }, effect: { multiplyResource: { darkMatter: 3 } } },
                 { id: 'dimensionalRift', name: 'Faille Dimensionnelle', desc: 'Toute production x3', icon: 'https://img.icons8.com/color/48/portal.png', cost: { credits: 10000000, darkMatter: 100000 }, unlockReq: { buildings: { dimensionGate: 3 } }, effect: { multiply: { ore: 3, energy: 3, credits: 3, research: 3, darkMatter: 3 } } },
-                { id: 'omegaMastery', name: 'Maîtrise Omega', desc: 'TOUTE production x5, Points rebirth +50%', icon: 'https://img.icons8.com/color/48/pentagram.png', cost: { credits: 100000000, darkMatter: 1000000, research: 500000 }, unlockReq: { buildings: { omegaCore: 1 } }, effect: { multiply: { ore: 5, energy: 5, credits: 5, research: 5, darkMatter: 5 }, rebirthBonus: 0.5 } }
+                { id: 'omegaMastery', name: 'Maîtrise Omega', desc: 'TOUTE production x5, Points rebirth +50%', icon: 'https://img.icons8.com/color/48/pentagram-devil.png', cost: { credits: 100000000, darkMatter: 1000000, research: 500000 }, unlockReq: { buildings: { omegaCore: 1 } }, effect: { multiply: { ore: 5, energy: 5, credits: 5, research: 5, darkMatter: 5 }, rebirthBonus: 0.5 } }
             ]
         };
 
@@ -2439,7 +2439,7 @@
             { id: 'rebirth3', name: 'Explorateur Galactique', desc: 'Atteins le rebirth niveau 3', icon: 'https://img.icons8.com/color/48/sparkling.png', req: { rebirthLevel: 3 } },
             { id: 'rebirth4', name: 'Maître des Dimensions', desc: 'Atteins le rebirth niveau 4', icon: 'https://img.icons8.com/color/48/portal.png', req: { rebirthLevel: 4 } },
             { id: 'rebirth5', name: 'Entité Cosmique', desc: 'Atteins le rebirth niveau 5', icon: 'https://img.icons8.com/color/48/bright-moon.png', req: { rebirthLevel: 5 } },
-            { id: 'rebirthMaster', name: 'Maître du Rebirth', desc: 'Effectue 5 rebirths au total', icon: 'https://img.icons8.com/color/48/pentagram.png', req: { rebirth: 5 } },
+            { id: 'rebirthMaster', name: 'Maître du Rebirth', desc: 'Effectue 5 rebirths au total', icon: 'https://img.icons8.com/color/48/pentagram-devil.png', req: { rebirth: 5 } },
 
             // Planètes
             { id: 'novaUnlock', name: 'Bienvenue sur Nova', desc: 'Débloque Nova Prime', icon: 'https://img.icons8.com/color/48/star.png', req: { planet: 'nova' } },
