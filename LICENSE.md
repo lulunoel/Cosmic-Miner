@@ -1,5 +1,3 @@
----
-
 # 📜 Licence – Cosmic Miner Custom License v1.0
 
 **Copyright (c) 2026 Lulunoel / Lucas Crendal**
