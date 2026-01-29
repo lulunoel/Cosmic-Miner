@@ -1,5 +1,3 @@
----
-
 # 📜 COMMERCIAL LICENSE – Cosmic Miner
 
 **Copyright (c) 2026 Lulunoel / Lucas Crendal**
