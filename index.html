@@ -1139,7 +1139,8 @@
                 }
             },
             lastOnline: Date.now(),
-            buyAmount: 1
+            buyAmount: 1,
+            scientificNotation: false
         };
 
         // ===== ÉVÉNEMENTS ALÉATOIRES =====
@@ -1448,75 +1449,57 @@
         ];
 
         // ===== FONCTIONS UTILITAIRES =====
-        function formatNumber(num) {
-            const units = [
-                { value: 1e303, symbol: 'Ce' }, // Centillion
-                { value: 1e300, symbol: 'No' }, // Novemnonagintillion
-                { value: 1e297, symbol: 'Oc' },
-                { value: 1e294, symbol: 'Sp' },
-                { value: 1e291, symbol: 'Sx' },
-                { value: 1e288, symbol: 'Qi' },
-                { value: 1e285, symbol: 'Qa' },
-                { value: 1e282, symbol: 'Tt' },
-                { value: 1e279, symbol: 'Dt' },
-                { value: 1e276, symbol: 'Ud' },
-                { value: 1e273, symbol: 'Dd' },
-                { value: 1e270, symbol: 'Td' },
-                { value: 1e267, symbol: 'Qd' },
-                { value: 1e264, symbol: 'Sd' },
-                { value: 1e261, symbol: 'Vg' },
-                { value: 1e258, symbol: 'Uv' },
-                { value: 1e255, symbol: 'Dv' },
-                { value: 1e252, symbol: 'Tv' },
-                { value: 1e249, symbol: 'Qv' },
-                { value: 1e246, symbol: 'Sv' },
-                { value: 1e243, symbol: 'Tg' },
-                { value: 1e240, symbol: 'Qg' },
-                { value: 1e237, symbol: 'Sg' },
-                { value: 1e234, symbol: 'Og' },
-                { value: 1e231, symbol: 'Ng' },
-                { value: 1e228, symbol: 'Ct' },
-                { value: 1e225, symbol: 'UvT' },
-                { value: 1e222, symbol: 'DvT' },
-                { value: 1e219, symbol: 'TvT' },
-                { value: 1e216, symbol: 'QvT' },
-                { value: 1e213, symbol: 'SvT' },
-                { value: 1e210, symbol: 'Dc' },
-                { value: 1e207, symbol: 'NoDc' },
-                { value: 1e204, symbol: 'OcDc' },
-                { value: 1e201, symbol: 'SpDc' },
-                { value: 1e198, symbol: 'SxDc' },
-                { value: 1e195, symbol: 'QiDc' },
-                { value: 1e192, symbol: 'QaDc' },
-                { value: 1e189, symbol: 'TtDc' },
-                { value: 1e186, symbol: 'DtDc' },
-                { value: 1e183, symbol: 'UdDc' },
-                { value: 1e180, symbol: 'Qn' }, // Quintillion^2 zone
-                { value: 1e150, symbol: 'QaQi' },
-                { value: 1e120, symbol: 'NoQi' },
-                { value: 1e90,  symbol: 'OcQi' },
-                { value: 1e60,  symbol: 'Nv' },
-                { value: 1e30,  symbol: 'No' },
-                { value: 1e27,  symbol: 'Oc' },
-                { value: 1e24,  symbol: 'Sp' },
-                { value: 1e21,  symbol: 'Sx' },
-                { value: 1e18,  symbol: 'Qi' },
-                { value: 1e15,  symbol: 'Qa' },
-                { value: 1e12,  symbol: 'T' },
-                { value: 1e9,   symbol: 'B' },
-                { value: 1e6,   symbol: 'M' },
-                { value: 1e3,   symbol: 'k' }
-            ];
+        // Système de notation des nombres infini
+        const numberUnits = [
+            '', 'k', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc',
+            'UDc', 'DDc', 'TDc', 'QaDc', 'QiDc', 'SxDc', 'SpDc', 'ODc', 'NDc', 'Vg',
+            'UVg', 'DVg', 'TVg', 'QaVg', 'QiVg', 'SxVg', 'SpVg', 'OVg', 'NVg', 'Tg',
+            'UTg', 'DTg', 'TTg', 'QaTg', 'QiTg', 'SxTg', 'SpTg', 'OTg', 'NTg', 'Qd',
+            'UQd', 'DQd', 'TQd', 'QaQd', 'QiQd', 'SxQd', 'SpQd', 'OQd', 'NQd', 'Qq',
+            'UQq', 'DQq', 'TQq', 'QaQq', 'QiQq', 'SxQq', 'SpQq', 'OQq', 'NQq', 'Sg',
+            'USg', 'DSg', 'TSg', 'QaSg', 'QiSg', 'SxSg', 'SpSg', 'OSg', 'NSg', 'St',
+            'USt', 'DSt', 'TSt', 'QaSt', 'QiSt', 'SxSt', 'SpSt', 'OSt', 'NSt', 'Og',
+            'UOg', 'DOg', 'TOg', 'QaOg', 'QiOg', 'SxOg', 'SpOg', 'OOg', 'NOg', 'Ng',
+            'UNg', 'DNg', 'TNg', 'QaNg', 'QiNg', 'SxNg', 'SpNg', 'ONg', 'NNg', 'Ce'
+        ];
 
-            for (const unit of units) {
-                if (num >= unit.value) {
-                    return (num / unit.value)
-                        .toFixed(2)
-                        .replace(/\.?0+$/, '') + unit.symbol;
-                }
+        function formatNumber(num) {
+            if (num < 0) return '-' + formatNumber(-num);
+            if (num < 1000) return Math.floor(num).toString();
+            if (!isFinite(num)) return 'Infinity';
+
+            // Mode scientifique
+            if (gameData.scientificNotation) {
+                if (num < 1e6) return Math.floor(num).toLocaleString('fr-FR');
+                const exp = Math.floor(Math.log10(num));
+                const mantissa = num / Math.pow(10, exp);
+                return mantissa.toFixed(2) + 'e' + exp;
             }
 
-            return Math.floor(num).toString();
+            // Mode standard avec unités
+            const exp = Math.floor(Math.log10(num));
+            const unitIndex = Math.floor(exp / 3);
+
+            if (unitIndex < numberUnits.length) {
+                const value = num / Math.pow(1000, unitIndex);
+                const formatted = value.toFixed(2).replace(/\.?0+$/, '');
+                return formatted + numberUnits[unitIndex];
+            } else {
+                // Au-delà des unités définies, on génère dynamiquement
+                // Format: nombre + exposant en notation condensée
+                const tierIndex = unitIndex - numberUnits.length + 1;
+                const value = num / Math.pow(1000, unitIndex);
+                const formatted = value.toFixed(2).replace(/\.?0+$/, '');
+                return formatted + 'e' + (unitIndex * 3);
+            }
+        }
+
+        function toggleNotation() {
+            gameData.scientificNotation = !gameData.scientificNotation;
+            updateResourceDisplay();
+            renderBuildings();
+            renderStats();
+            showNotification(gameData.scientificNotation ? 'Notation scientifique activée' : 'Notation standard activée');
         }
 
         function getBuildingCost(building, amount = 1) {
@@ -1907,6 +1890,20 @@
                     </div>
                 </div>
 
+                <div class="stats-section">
+                    <div class="stats-section-title">Affichage</div>
+                    <div class="stat-row">
+                        <span class="stat-label">Notation des nombres</span>
+                        <button class="stats-btn" onclick="toggleNotation()" style="margin: 0;">
+                            ${gameData.scientificNotation ? 'Scientifique' : 'Standard'}
+                        </button>
+                    </div>
+                    <div style="font-size: 0.7em; color: var(--text-secondary); margin-top: 8px;">
+                        Standard: 1.5M, 2.3B, 4.5T...<br>
+                        Scientifique: 1.50e6, 2.30e9...
+                    </div>
+                </div>
+
                 <div class="stats-section credits-section">
                     <div class="credits-title">Crédits</div>
                     <div class="credits-text">
@@ -2165,6 +2162,9 @@
                 }
                 if (gameData.buyAmount === undefined) {
                     gameData.buyAmount = 1;
+                }
+                if (gameData.scientificNotation === undefined) {
+                    gameData.scientificNotation = false;
                 }
             }
         }
