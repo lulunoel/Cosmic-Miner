@@ -153,8 +153,8 @@ npm run build:win
 ```
 
 **Fichiers générés dans `dist/` :**
-- `Cosmic Miner Setup 1.0.0.exe` - Installateur NSIS (~76.5 MB)
-- `Cosmic Miner 1.0.0.exe` - Exécutable portable (~76.2 MB)
+- `Cosmic Miner Setup 2.0.0.exe` - Installateur NSIS (~76.5 MB)
+- `Cosmic Miner 2.0.0.exe` - Exécutable portable (~76.2 MB)
 
 ### Construire pour macOS
 
@@ -184,8 +184,8 @@ idlegame/
 ├── icon.png                 # Icône du jeu (512x512)
 ├── icon.ico                 # Icône Windows
 ├── dist/                    # Dossier de sortie des builds
-│   ├── Cosmic Miner 1.0.0.exe
-│   ├── Cosmic Miner Setup 1.0.0.exe
+│   ├── Cosmic Miner 2.0.0.exe
+│   ├── Cosmic Miner Setup 2.0.0.exe
 │   └── win-unpacked/
 └── node_modules/            # Dépendances Node.js
 ```
